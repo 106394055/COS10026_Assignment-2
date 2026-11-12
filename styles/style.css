@@ -1,14 +1,22 @@
-/* ==========================================
-   A. GLOBAL & COMMON STYLES
-   Header, Navigation, Footer, Colors, Fonts, Resets
-   ========================================== 
-   TABLE OF CONTENTS
-  1. Tokens (:root)
-  2. Base and reset
-  3. Shared components (skip link, header and nav, footer, buttons, chips, breadcrumb, bot)
-   */
+/* ==========================================================================
+   VINFAST CAREERS - MAIN STYLESHEET (COS10026 ASSIGNMENT 2)
+   ==========================================================================
+   TABLE OF CONTENTS:
+   A. GLOBAL & COMMON STYLES (Tokens, Reset, Header, Nav, Shared UI, Bot, Footer)
+   B. HOME PAGE STYLES      (.page-home  -> index.php)
+   C. JOBS PAGE STYLES      (.page-jobs  -> jobs.php)
+   D. APPLY PAGE STYLES     (.apply-page -> apply.php)
+   E. ABOUT PAGE STYLES     (about.php)
+   F. RESPONSIVE MEDIA QUERIES, ACCESSIBILITY & PRINT
+   ========================================================================== */
 
-/*1. TOKENS (:root) - Colors */
+
+/* ==========================================================================
+   A. GLOBAL & COMMON STYLES
+   Shared across all pages via header.inc, nav.inc, and footer.inc
+   ========================================================================== */
+
+/* A.1 Design Tokens (:root) */
 :root {
     --color-primary: #0b5fff;
     --color-primary-dark: #0847c4;
@@ -29,14 +37,13 @@
     --bg-bottom: #ffffff;
 }
 
-/*2. BASE AND RESET */
+/* A.2 Base & Reset */
 *,
 *::before,
 *::after {
     box-sizing: border-box;
 }
 
-/*Rising gradient background while scrolling down the page*/
 html {
     min-height: 100%;
     font-size: 16px;
@@ -52,7 +59,6 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    /* sticky footer: main grows, footer sits at the bottom */
     font-family: "Inter", "Segoe UI", Arial, sans-serif;
     font-size: 1rem;
     line-height: 1.5;
@@ -63,7 +69,6 @@ body {
 main {
     flex: 1 0 auto;
     padding-bottom: 56px;
-    /* breathing room above the footer */
 }
 
 [id] {
@@ -88,6 +93,7 @@ dd {
     margin-top: 0;
 }
 
+/* A.3 Global Layout & Accessibility */
 .container {
     max-width: 1280px;
     margin-left: auto;
@@ -96,9 +102,18 @@ dd {
     padding-right: clamp(1rem, 5.5vw, 5rem);
 }
 
-/*3. SHARED COMPONENTS */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
 
-/*Skip link */
 .skip-link {
     position: absolute;
     top: -100px;
@@ -118,13 +133,12 @@ dd {
     top: 12px;
 }
 
-/*Site header and navigation */
+/* A.4 Site Header & Navigation */
 .site-header {
     background-color: transparent;
     color: var(--color-nav);
 }
 
-/*Logo on left and navigation on right */
 .site-header__inner {
     display: flex;
     flex-wrap: wrap;
@@ -135,7 +149,6 @@ dd {
     padding-bottom: 12px;
 }
 
-/*Clickable logo */
 .site-brand {
     display: inline-flex;
     align-items: center;
@@ -161,7 +174,6 @@ dd {
     font-weight: 1000;
 }
 
-/*Horizontal navigation menu */
 .site-nav ul {
     display: flex;
     flex-wrap: wrap;
@@ -172,7 +184,6 @@ dd {
     padding: 0;
 }
 
-/* Navigation links with 44px minimum touch target and bottom indicator border */
 .site-nav a {
     display: inline-flex;
     align-items: center;
@@ -191,25 +202,15 @@ dd {
     background-color: transparent;
     color: var(--color-primary);
     border-bottom-color: rgba(11, 95, 255, 0.4);
-    /* visible on pale backgrounds */
 }
 
-/* Attribute selector highlighting the active page in the navigation bar */
 .site-nav a[aria-current="page"] {
     background-color: transparent;
     color: var(--color-primary);
     border-bottom-color: var(--color-primary);
 }
 
-/* Small screens: wrap navigation links under logo */
-@media (max-width: 600px) {
-    .site-header__inner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-/*Shared buttons */
+/* A.5 Shared Buttons, Chips & Breadcrumbs */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -226,7 +227,6 @@ dd {
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-/* Primary clicked button in VinFast royal blue */
 .btn--primary {
     background-color: var(--color-primary);
     color: var(--color-surface);
@@ -236,7 +236,16 @@ dd {
     background-color: var(--color-primary-dark);
 }
 
-/* Pill-shaped status and job reference badges - FOR JOBS PAGE */
+.btn--secondary {
+    background-color: #ffffff;
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+.btn--secondary:hover {
+    background-color: var(--color-block);
+}
+
 .chip,
 .ref-chip {
     display: inline-flex;
@@ -251,7 +260,6 @@ dd {
     font-weight: 600;
 }
 
-/* Breadcrumb navigation for jobs and apply pages */
 .breadcrumb {
     padding-top: 16px;
     padding-bottom: 8px;
@@ -289,27 +297,14 @@ dd {
     color: var(--color-navy);
 }
 
-/*Assisstant bot*/
+/* A.6 Floating VF Chatbot Widget */
 .site-bot {
     position: fixed;
     right: 24px;
-    bottom: 186px;
-    /* lifted from 24px */
+    bottom: 24px;
     z-index: 90;
 }
 
-@media (max-width: 600px) {
-    .site-bot {
-        right: 16px;
-        bottom: 16px;
-    }
-
-    .site-bot__badge {
-        display: none;
-    }
-}
-
-/* Bot trigger button */
 .site-bot__trigger {
     display: inline-flex;
     align-items: center;
@@ -342,7 +337,6 @@ dd {
     object-fit: cover;
 }
 
-/* Bot panel when clicked*/
 .site-bot__panel {
     position: absolute;
     right: 0;
@@ -369,7 +363,6 @@ dd {
     color: var(--color-muted);
 }
 
-/* Bot links list */
 .site-bot__links {
     list-style: none;
     margin: 0;
@@ -396,11 +389,10 @@ dd {
     background-color: var(--color-chip);
 }
 
-/*Footer */
+/* A.7 Site Footer */
 .site-footer {
     flex-shrink: 0;
     margin-top: auto;
-    /* flex column body: pins the footer to the bottom of short pages */
     padding-top: 20px;
     padding-bottom: 14px;
     background-color: var(--color-navy);
@@ -408,7 +400,6 @@ dd {
     font-size: 0.9rem;
 }
 
-/* Brand and acknowledgment sections in the footer */
 .site-footer__inner {
     display: grid;
     grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
@@ -425,7 +416,6 @@ dd {
     align-items: center;
 }
 
-/* Footer logo */
 .site-footer__brand img {
     width: auto;
     height: 36px;
@@ -445,7 +435,6 @@ dd {
     margin: 0;
 }
 
-/* Copyright and meta links at the bottom of the footer */
 .site-footer__bottom {
     grid-area: bottom;
     display: flex;
@@ -475,7 +464,6 @@ dd {
     display: inline-flex;
     align-items: center;
     min-height: 32px;
-    /* above the WCAG 2.2 AA minimum target size of 24px */
     padding: 2px 6px;
     color: var(--color-border);
     text-decoration: underline;
@@ -494,42 +482,19 @@ dd {
     white-space: nowrap;
 }
 
-/* Responsive footer layout for smaller screens */
-@media (max-width: 900px) {
-    .site-footer {
-        padding-bottom: 72px;
-    }
 
-    .site-footer__inner {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "brand"
-            "ack"
-            "bottom";
-    }
+/* ==========================================================================
+   B. HOME PAGE STYLES (index.php)
+   ========================================================================== */
 
-    .site-footer__bottom {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-
-/* ==========================================
-   B. HOME PAGE STYLES
-   ========================================== */
-
-/* 1. HERO SECTION */
+/* B.1 Hero Section */
 .page-home .hero-section {
     position: relative;
     width: 100%;
-    /* Give enough height to display the full image nicely */
     min-height: 520px;
     display: flex;
-    /* Align content near the top instead of vertical center */
     align-items: flex-start;
     justify-content: center;
-    /* Control exact distance from top edge into the clear sky */
     padding-top: 40px;
     overflow: hidden;
 }
@@ -569,7 +534,7 @@ dd {
     line-height: 1;
 }
 
-/* 2. SEARCH SECTION */
+/* B.2 Search Section */
 .page-home .search-section {
     width: 100%;
     display: flex;
@@ -617,7 +582,7 @@ dd {
     background-color: #0056b3;
 }
 
-/* 3. STATS SECTION */
+/* B.3 Stats Section */
 .page-home .stats-section {
     width: 100%;
     text-align: center;
@@ -666,7 +631,7 @@ dd {
     line-height: 1.4;
 }
 
-/* 4. JOBS SECTION */
+/* B.4 Jobs Table Section */
 .page-home .jobs-section {
     width: 100%;
     display: flex;
@@ -684,18 +649,17 @@ dd {
 }
 
 .page-home .job-table caption {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
-/* Header Row */
 .page-home .job-header-row td {
     background-color: #11428f;
     color: #ffffff;
@@ -749,7 +713,6 @@ dd {
     background-color: #0052cc;
 }
 
-/* Details Row */
 .page-home .job-details-row td {
     background-color: #f1f5fa;
     padding: 25px 20px;
@@ -767,7 +730,6 @@ dd {
     border-right: 1px solid #e1e8f0;
 }
 
-/* Columns */
 .page-home .col-location {
     width: 30%;
     border-right: 1px solid #dbe3ed;
@@ -783,7 +745,6 @@ dd {
     padding-left: 30px;
 }
 
-/* Info Box Inside Table Cells */
 .page-home .info-box {
     display: flex;
     flex-direction: column;
@@ -801,7 +762,6 @@ dd {
     padding: 6px;
 }
 
-
 .page-home .info-subtext {
     font-size: 17px;
     color: #000000;
@@ -815,9 +775,7 @@ dd {
     font-weight: 700;
 }
 
-/* 5. CAREER BANNER */
-
-/* Outer banner container covering full horizontal width */
+/* B.5 Career Banner */
 .page-home .banner {
     position: relative;
     width: 100%;
@@ -827,7 +785,6 @@ dd {
     align-items: center;
 }
 
-/* Background image wrapper */
 .page-home .banner-bg {
     position: absolute;
     top: 0;
@@ -837,7 +794,6 @@ dd {
     z-index: 1;
 }
 
-/* Ensure image fills the container and stays centered */
 .page-home .banner-bg-center {
     width: 100%;
     height: 100%;
@@ -845,7 +801,6 @@ dd {
     object-position: center;
 }
 
-/* Banner content overlaid on top of the image */
 .page-home .banner-content {
     position: relative;
     z-index: 2;
@@ -855,7 +810,6 @@ dd {
     padding: 0 5%;
 }
 
-/* Heading styling */
 .page-home .banner-heading {
     font-size: 35px;
     font-weight: 700;
@@ -864,7 +818,6 @@ dd {
     color: #ffffff;
 }
 
-/* Subtext styling */
 .page-home .banner-subtext {
     font-size: 16px;
     font-weight: 400;
@@ -873,7 +826,6 @@ dd {
     color: #ffffff;
 }
 
-/* Apply Now button styling */
 .page-home .banner-btn {
     display: inline-flex;
     align-items: center;
@@ -897,6 +849,12 @@ dd {
     transform: translateY(-2px);
 }
 
+
+/* ==========================================================================
+   C. JOBS PAGE STYLES (jobs.php)
+   ========================================================================== */
+
+/* C.1 Hero & CSS-Only Slideshow */
 .page-jobs .hero {
     padding-top: 40px;
     padding-bottom: 24px;
@@ -952,17 +910,13 @@ dd {
     font-weight: 700;
 }
 
-   .page-jobs .hero__note {
-     font-size: 0.9rem;
-     font-style: italic;
-     margin-top: 0.75rem;
-     opacity: 0.9;
-   }
-/* =========================================
-   JOB PAGE - CSS-ONLY HERO SLIDESHOW
-   ========================================= */
+.page-jobs .hero__note {
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-top: 0.75rem;
+    opacity: 0.9;
+}
 
-/* Main slideshow container */
 .page-jobs .hero__media>.hero-slider {
     position: relative;
     width: 100%;
@@ -973,14 +927,12 @@ dd {
     background-color: var(--color-navy);
 }
 
-/* Inner slideshow container */
 .page-jobs .hero-slider .hero-slider {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
 }
 
-/* Hide all slides by default */
 .page-jobs .hero-slider_slide {
     display: none;
     position: absolute;
@@ -989,22 +941,15 @@ dd {
     height: 100%;
 }
 
-/* Display the first slide initially */
-.page-jobs .hero-slider_slide:first-child {
-    display: block;
-}
-
-/* Display the selected slide */
+.page-jobs .hero-slider_slide:first-child,
 .page-jobs .hero-slider_slide:target {
     display: block;
 }
 
-/* Hide first slide when another is selected */
 .page-jobs .hero-slider:has(> .hero-slider_slide:target)>.hero-slider_slide:first-child:not(:target) {
     display: none;
 }
 
-/* Slide images */
 .page-jobs .hero-slider_slide img {
     display: block;
     width: 100%;
@@ -1012,25 +957,19 @@ dd {
     object-fit: cover;
 }
 
-/* Previous and Next arrows */
 .page-jobs .hero-slider_slide>a {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-
     width: 44px;
     height: 44px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     background-color: rgba(10, 31, 77, 0.72);
     color: #ffffff;
-
     border: 2px solid rgba(255, 255, 255, 0.8);
     border-radius: 50%;
-
     text-decoration: none;
     font-size: 1.15rem;
     font-weight: 700;
@@ -1038,7 +977,6 @@ dd {
     z-index: 2;
 }
 
-/* Previous arrow */
 .page-jobs .hero-slider_slide>a:first-of-type {
     left: 12px;
 }
@@ -1047,7 +985,6 @@ dd {
     content: "\276E";
 }
 
-/* Next arrow */
 .page-jobs .hero-slider_slide>a:last-of-type {
     right: 12px;
 }
@@ -1056,7 +993,6 @@ dd {
     content: "\276F";
 }
 
-/* Hover and focus */
 .page-jobs .hero-slider_slide>a:hover {
     background-color: var(--color-primary);
 }
@@ -1067,17 +1003,14 @@ dd {
     outline-offset: 3px;
 }
 
-/* Slide indicator dots */
 .page-jobs .hero-slider__dots {
     position: absolute;
     bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
-
     display: flex;
     gap: 8px;
     padding: 6px 12px;
-
     background-color: rgba(10, 31, 77, 0.6);
     border-radius: 999px;
     z-index: 3;
@@ -1096,12 +1029,11 @@ dd {
     background-color: #ffffff;
 }
 
-/* Indicate the currently selected slide */
 .page-jobs .hero-slider__dots:not(:has(~ .hero-slider_slide)) {
     pointer-events: auto;
 }
 
-.page-jobs .hero-slider .hero-slider:not( :has(> .hero-slider_slide:target)) .hero-slider__dot[href="#slide-1"],
+.page-jobs .hero-slider .hero-slider:not(:has(> .hero-slider_slide:target)) .hero-slider__dot[href="#slide-1"],
 .page-jobs .hero-slider .hero-slider:has(> #slide-1:target) .hero-slider__dot[href="#slide-1"],
 .page-jobs .hero-slider .hero-slider:has(> #slide-2:target) .hero-slider__dot[href="#slide-2"],
 .page-jobs .hero-slider .hero-slider:has(> #slide-3:target) .hero-slider__dot[href="#slide-3"],
@@ -1114,18 +1046,7 @@ dd {
     background-color: var(--color-primary);
 }
 
-@media (prefers-reduced-motion: reduce) {
-
-    .page-jobs .hero-slider_slide>a,
-    .page-jobs .hero-slider__dot {
-        transition: none;
-    }
-}
-
-
-/* ---- C.2 Overview: panels, jump pills and the floated aside ---- */
-/* New block formatting context (flow-root) clears the right-floated scam warning aside */
-/* Trim global 56px bottom padding on Jobs main so footer sits closer */
+/* C.2 Overview: Panels, Jump Pills & Floated Scam Aside */
 .page-jobs main {
     padding-bottom: 20px;
 }
@@ -1136,7 +1057,6 @@ dd {
     padding-bottom: 0;
 }
 
-/* Brief requirement: aside floated right, 25% width, with margin, padding and border */
 .page-jobs .scam-aside {
     float: right;
     width: 25%;
@@ -1183,7 +1103,6 @@ dd {
     margin-top: 8px;
 }
 
-/* Panels sit beside the float: flow-root makes them fill the remaining width */
 .page-jobs .panel {
     display: flow-root;
     padding: 24px 28px;
@@ -1213,7 +1132,6 @@ dd {
     color: var(--color-navy);
 }
 
-/* Flex row of pill triggers that open the CSS-only role modal panels */
 .page-jobs .pill-list {
     display: flex;
     flex-wrap: wrap;
@@ -1242,7 +1160,7 @@ dd {
     color: var(--color-surface);
 }
 
-/* ---- C.3 How to apply (steps + CTA aligned in one balanced row) ---- */
+/* C.3 How to Apply Banner */
 .page-jobs .panel.how-to {
     padding: 18px 24px;
     background-color: var(--color-navy);
@@ -1303,8 +1221,7 @@ dd {
     box-shadow: 0 4px 14px rgba(11, 95, 255, 0.35);
 }
 
-/* ---- C.4 Role pop-ups (CSS-only, opened with :target) ---- */
-/* Hidden fixed overlay by default; becomes visible when its ID matches the URL hash */
+/* C.4 Role Pop-up Modals (:target) & Accordion */
 .page-jobs .role-modal {
     display: none;
     position: fixed;
@@ -1315,24 +1232,20 @@ dd {
     background-color: rgba(10, 31, 77, 0.6);
 }
 
-/* Reveal the targeted role modal without JavaScript */
 .page-jobs .role-modal:target {
     display: block;
 }
 
-/* Lock page scroll while a role panel is open */
 html:has(.role-modal:target) {
     overflow: hidden;
 }
 
-/* Clicking the dimmed area closes the panel and returns to #role-links */
 .page-jobs .role-modal__backdrop {
     position: fixed;
     inset: 0;
     z-index: 0;
 }
 
-/* Foreground modal dialog container sitting above the clickable backdrop */
 .page-jobs .role-modal__sheet {
     position: relative;
     z-index: 1;
@@ -1346,7 +1259,6 @@ html:has(.role-modal:target) {
     box-shadow: 0 24px 60px rgba(10, 31, 77, 0.35);
 }
 
-/* Subtle entrance animation when opening or switching a role modal */
 .page-jobs .role-modal:target .role-modal__sheet {
     animation: sheet-in 0.25s ease-out;
 }
@@ -1363,18 +1275,15 @@ html:has(.role-modal:target) {
     }
 }
 
-/* Apply horizontal margin to all direct children of the sheet except the full-bleed sticky tab bar */
 .page-jobs .role-modal__sheet> :not(.role-tabs) {
     margin-left: clamp(16px, 3vw, 32px);
     margin-right: clamp(16px, 3vw, 32px);
 }
 
-/* Universal adjacent sibling selector (* + *) adding vertical spacing between sheet sections */
 .page-jobs .role-modal__sheet>*+* {
     margin-top: 20px;
 }
 
-/* Sticky tab bar: switch role without closing the panel */
 .page-jobs .role-tabs {
     position: sticky;
     top: 0;
@@ -1415,14 +1324,12 @@ html:has(.role-modal:target) {
     border-color: var(--color-primary);
 }
 
-/* Highlight the currently active role tab inside the modal */
 .page-jobs .role-tabs a[aria-current="true"] {
     background-color: var(--color-primary);
     border-color: var(--color-primary);
     color: var(--color-surface);
 }
 
-/* Visible Close link returning focus to #role-links (replaces JS Esc key handler) */
 .page-jobs .role-modal__close {
     display: inline-flex;
     align-items: center;
@@ -1434,7 +1341,6 @@ html:has(.role-modal:target) {
     border-radius: 8px;
 }
 
-/* Role header: department heading, summary text, role title, reference chip, and CTA */
 .page-jobs .role-modal__head h2 {
     margin-top: 8px;
     margin-bottom: 4px;
@@ -1463,7 +1369,6 @@ html:has(.role-modal:target) {
     color: var(--color-navy);
 }
 
-/* Five-column definition list grid displaying key role metadata */
 .page-jobs .role-meta {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -1487,7 +1392,6 @@ html:has(.role-modal:target) {
     color: var(--color-navy);
 }
 
-/* Two-column CSS Grid holding the role detail blocks */
 .page-jobs .role-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1501,7 +1405,6 @@ html:has(.role-modal:target) {
     border-radius: 12px;
 }
 
-/* Modifier class spanning a block across both grid columns */
 .page-jobs .block--wide {
     grid-column: 1 / -1;
 }
@@ -1528,7 +1431,6 @@ html:has(.role-modal:target) {
     margin-top: 6px;
 }
 
-/* Style list numbers and bullets inside role blocks in dark primary blue */
 .page-jobs .block li::marker {
     font-weight: 700;
     color: var(--color-primary-dark);
@@ -1538,7 +1440,6 @@ html:has(.role-modal:target) {
     margin-bottom: 0;
 }
 
-/* Two-column sub-grid for 30/60/90-day performance goal tiles */
 .page-jobs .goal-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1566,7 +1467,6 @@ html:has(.role-modal:target) {
     margin-bottom: 0;
 }
 
-/* See more: native <details>, no JavaScript */
 .page-jobs .see-more {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -1590,7 +1490,6 @@ html:has(.role-modal:target) {
     display: none;
 }
 
-/* Pure CSS chevron indicator built with rotated right and bottom borders */
 .page-jobs .see-more>summary::after {
     content: "";
     width: 10px;
@@ -1607,7 +1506,6 @@ html:has(.role-modal:target) {
     border-radius: 12px 12px 0 0;
 }
 
-/* Flip chevron upward when <details> is expanded */
 .page-jobs .see-more[open]>summary::after {
     transform: rotate(-135deg);
 }
@@ -1616,7 +1514,6 @@ html:has(.role-modal:target) {
     padding: 16px;
 }
 
-/* Bottom navy call-to-action strip inside each role modal sheet */
 .page-jobs .role-modal__footer {
     display: flex;
     flex-wrap: wrap;
@@ -1649,155 +1546,21 @@ html:has(.role-modal:target) {
 }
 
 
-/* ==========================================
-   D. APPLICATION PAGE STYLES 
-   ========================================== */
-/* TOKENS (:root) & BASE STYLES */
-:root {
-    --color-primary: #0b5fff;
-    --color-primary-dark: #0847c4;
-    --color-navy: #0a1f4d;
-    --color-nav: #0b274b;
-    --color-bg: #eef4fc;
-    --color-surface: #ffffff;
-    --color-block: #f5f9ff;
-    --color-border: #dbe6f5;
-    --color-chip: #e3edff;
-    --color-text: #333333;
+/* ==========================================================================
+   D. APPLICATION PAGE STYLES (apply.php)
+   ========================================================================== */
+
+/* D.1 Page-Specific Token & Layout Overrides */
+.apply-page {
     --color-muted: #0f172a;
-    --bg-top: #e8f1ff;
-    --bg-bottom: #ffffff;
-}
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-html {
-    min-height: 100%;
-    font-size: 16px;
-    background-color: var(--bg-top);
-    background-image: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
-    background-repeat: no-repeat;
-    scroll-behavior: smooth;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    font-family: "Inter", "Segoe UI", Arial, sans-serif;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: var(--color-text);
-    background-color: transparent;
-}
-
-main {
-    flex: 1 0 auto;
-    padding-bottom: 56px;
 }
 
 .apply-page .container {
-    max-width: 1280px;
-    margin-left: auto;
-    margin-right: auto;
     padding-left: clamp(1rem, 5vw, 4rem);
     padding-right: clamp(1rem, 5vw, 4rem);
 }
 
-.apply-page .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-}
-
-/* Skip link for accessibility */
-.apply-page .skip-link {
-    position: absolute;
-    top: -100px;
-    left: 16px;
-    z-index: 200;
-    padding: 10px 18px;
-    background-color: var(--color-primary);
-    color: var(--color-surface);
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: 8px;
-}
-
-.apply-page .skip-link:focus {
-    top: 12px;
-}
-
-/* 2. HEADER & NAVIGATION */
-.apply-page .site-header {
-    background-color: transparent;
-    color: var(--color-nav);
-}
-
-.apply-page .site-header__inner {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-}
-
-.apply-page .site-brand {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    color: var(--color-nav);
-    text-decoration: none;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.apply-page .site-brand img {
-    height: 48px;
-    width: auto;
-}
-
-.apply-page .site-nav ul {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.apply-page .site-nav a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 8px 16px;
-    color: var(--color-nav);
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 3px solid transparent;
-    transition: color 0.15s, border-color 0.15s;
-}
-
-.apply-page .site-nav a:hover,
-.apply-page .site-nav a[aria-current="page"] {
-    color: var(--color-primary);
-    border-bottom-color: var(--color-primary);
-}
-
-/* 3. HERO BANNER */
+/* D.2 Hero Banner */
 .apply-page .hero-banner {
     background: linear-gradient(135deg, #0a1f4d 0%, #0b5fff 100%);
     color: #ffffff;
@@ -1821,7 +1584,7 @@ main {
     margin: 0;
 }
 
-/* 4. APPLY PAGE - STEPPER & LAYOUT */
+/* D.3 Stepper & Main Grid Layout */
 .apply-page .main-container {
     margin-top: 12px;
 }
@@ -1884,7 +1647,7 @@ main {
     gap: 24px;
 }
 
-/* 5. FORM STYLES */
+/* D.4 Form Sections & Inputs */
 .apply-page .form-section {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -1958,9 +1721,9 @@ main {
     flex: 1 1 100%;
 }
 
-label,
-.gender-legend,
-.skills-legend {
+.apply-page label,
+.apply-page .gender-legend,
+.apply-page .skills-legend {
     font-weight: 600;
     font-size: 0.85rem;
     color: var(--color-text);
@@ -1970,12 +1733,12 @@ label,
     color: #b91c1c;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="file"],
-select,
-textarea {
+.apply-page input[type="text"],
+.apply-page input[type="email"],
+.apply-page input[type="tel"],
+.apply-page input[type="file"],
+.apply-page select,
+.apply-page textarea {
     width: 100%;
     padding: 8px 12px;
     border: 1px solid var(--color-border);
@@ -1985,9 +1748,9 @@ textarea {
     background-color: #ffffff;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
+.apply-page input:focus,
+.apply-page select:focus,
+.apply-page textarea:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(11, 95, 255, 0.2);
@@ -2030,37 +1793,10 @@ textarea:focus {
 }
 
 .apply-page .btn {
-    display: inline-flex;
-    align-items: center;
     gap: 6px;
-    padding: 10px 22px;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    border: 2px solid transparent;
 }
 
-.apply-page .btn--primary {
-    background-color: var(--color-primary);
-    color: var(--color-surface);
-}
-
-.apply-page .btn--primary:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.apply-page .btn--secondary {
-    background-color: #ffffff;
-    color: var(--color-text);
-    border-color: var(--color-border);
-}
-
-.apply-page .btn--secondary:hover {
-    background-color: var(--color-block);
-}
-
-/* 6. SIDEBAR CARDS & TIMELINE */
+/* D.5 Sidebar Cards & Timeline */
 .apply-page .sidebar-column {
     display: flex;
     flex-direction: column;
@@ -2212,249 +1948,12 @@ textarea:focus {
     margin: 0;
 }
 
-/* 7. FLOATING VF CHATBOT WIDGET */
-.site-bot {
-    position: fixed;
-    right: 24px;
-    bottom: 24px;
-    z-index: 90;
-}
 
-.site-bot__trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 48px;
-    padding: 6px 14px 6px 8px;
-    background-color: var(--color-navy);
-    color: var(--color-surface);
-    border: 2px solid var(--color-primary);
-    border-radius: 999px;
-    box-shadow: 0 8px 24px rgba(10, 31, 77, 0.22);
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    list-style: none;
-}
+/* ==========================================================================
+   E. ABOUT PAGE STYLES (about.php)
+   ========================================================================== */
 
-.site-bot__trigger::-webkit-details-marker {
-    display: none;
-}
-
-.site-bot__trigger:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.site-bot__trigger img {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.site-bot__panel {
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 12px);
-    width: min(320px, calc(100vw - 32px));
-    padding: 18px;
-    background-color: var(--color-surface);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    box-shadow: 0 14px 34px rgba(10, 31, 77, 0.2);
-}
-
-.site-bot__title {
-    margin-bottom: 6px;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--color-navy);
-}
-
-.site-bot__text {
-    margin-bottom: 12px;
-    font-size: 0.88rem;
-    color: var(--color-muted);
-}
-
-.site-bot__links {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 6px;
-}
-
-.site-bot__links a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 6px 12px;
-    background-color: var(--color-block);
-    color: var(--color-primary-dark);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.site-bot__links a:hover {
-    background-color: var(--color-chip);
-}
-
-/* 8. FOOTER */
-.site-footer {
-    flex-shrink: 0;
-    margin-top: auto;
-    padding-top: 20px;
-    padding-bottom: 14px;
-    background-color: var(--color-navy);
-    color: var(--color-border);
-    font-size: 0.9rem;
-}
-
-.site-footer__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
-    grid-template-areas:
-        "brand ack"
-        "bottom bottom";
-    gap: 12px 40px;
-    align-items: start;
-}
-
-.site-footer__brand {
-    grid-area: brand;
-    display: flex;
-    align-items: center;
-}
-
-.site-footer__brand img {
-    width: auto;
-    height: 36px;
-    margin-left: -16px;
-}
-
-.site-footer__tagline {
-    margin: 0 0 0 2px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-surface);
-}
-
-.site-footer__ack {
-    grid-area: ack;
-    max-width: 90ch;
-    margin: 0;
-}
-
-.site-footer__bottom {
-    grid-area: bottom;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 4px 24px;
-    padding-top: 8px;
-    border-top: 1px solid var(--color-nav);
-}
-
-.site-footer__copy {
-    margin: 0;
-    font-size: 0.85rem;
-}
-
-.site-footer__meta-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.site-footer a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 32px;
-    padding: 2px 6px;
-    color: var(--color-border);
-    text-decoration: underline;
-}
-
-.site-footer a:hover {
-    color: var(--color-surface);
-}
-
-/* 9. MEDIA QUERIES (MOBILE RESPONSIVE) */
-@media (max-width: 900px) {
-
-    /* Stack form and sidebar vertically */
-    .apply-page .content-grid {
-        grid-template-columns: 1fr;
-    }
-
-    /* Allow stepper to scroll horizontally */
-    .apply-page .stepper-bar {
-        overflow-x: auto;
-    }
-
-    /* Footer layout for tablet */
-    .site-footer__inner {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "brand"
-            "ack"
-            "bottom";
-    }
-
-}
-
-@media (max-width: 600px) {
-
-    /* Mobile header */
-    .apply-page .site-header__inner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    /* Stack form fields */
-    .apply-page .form-row {
-        flex-direction: column;
-    }
-
-    /* Full-width form fields */
-    .apply-page .col-13,
-    .apply-page .col-23,
-    .apply-page .col-12 {
-        flex: 1 1 100%;
-        min-width: 0;
-    }
-
-    /* Stack radio buttons */
-    .apply-page .radio-group {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    /* Floating chatbot */
-    .site-bot {
-        right: 16px;
-        bottom: 16px;
-    }
-
-    .site-bot__badge {
-        display: none;
-    }
-
-}
-
-/* ==========================================
-   E. ABOUT PAGE STYLES
-   ========================================== */
-/* Typography & General Spacing */
+/* E.1 Section Headers & Hero */
 .about-section {
     margin-bottom: 64px;
 }
@@ -2474,7 +1973,6 @@ textarea:focus {
     margin-bottom: 24px;
 }
 
-/* hero section */
 .about-hero {
     background-color: var(--color-navy);
     color: var(--color-surface);
@@ -2543,7 +2041,6 @@ textarea:focus {
 
 .team-avatars {
     display: flex;
-    gap: -10px;
 }
 
 .team-avatars .avatar {
@@ -2564,7 +2061,7 @@ textarea:focus {
     margin-left: 0;
 }
 
-/* group info grid */
+/* E.2 Group Info & Course Details */
 .info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2602,7 +2099,7 @@ textarea:focus {
     color: var(--color-text);
 }
 
-/* team contributions */
+/* E.3 Team Contributions */
 .team-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -2703,10 +2200,7 @@ textarea:focus {
     margin-bottom: 0;
 }
 
-/* workflow steps */
-/* 03 How We Work Section */
-
-/* --- 1. WORKFLOW STEPS  --- */
+/* E.4 Workflow Steps & Toolkit Cards */
 .workflow-steps {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -2740,7 +2234,6 @@ textarea:focus {
     font-size: 1.1rem;
 }
 
-
 .step__title {
     font-size: 1.2rem;
     font-weight: 700;
@@ -2756,7 +2249,6 @@ textarea:focus {
     color: var(--color-muted);
 }
 
-/* tools cards */
 .tools-title {
     font-size: 1.5rem;
     color: var(--color-navy);
@@ -2803,8 +2295,7 @@ textarea:focus {
     line-height: 1.5;
 }
 
-/* group photo */
-/* 04 Group Photo */
+/* E.5 Group Photo & Fun Facts Table */
 .group-photo-wrapper {
     max-width: 800px;
     margin: 0 auto;
@@ -2830,7 +2321,6 @@ textarea:focus {
     font-size: 0.9rem;
 }
 
-/* fun facts table */
 .table-responsive {
     overflow-x: auto;
 }
@@ -2877,7 +2367,7 @@ textarea:focus {
     border-bottom: none;
 }
 
-/* acknowledgement */
+/* E.6 Acknowledgement of Country */
 #acknowledgement {
     background-color: var(--color-navy);
     color: var(--color-surface);
@@ -2886,7 +2376,6 @@ textarea:focus {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* 2-column flexbox layout */
 .ack-layout {
     display: flex;
     align-items: center;
@@ -2895,7 +2384,6 @@ textarea:focus {
 
 .ack-text {
     flex: 2;
-    /* text takes up roughly 2/3 of the space */
     text-align: left;
 }
 
@@ -2916,10 +2404,8 @@ textarea:focus {
     margin-bottom: 0;
 }
 
-/* logo styling */
 .ack-visual {
     flex: 1;
-    /* logo takes up 1/3 of the space */
     display: flex;
     justify-content: center;
 }
@@ -2928,27 +2414,55 @@ textarea:focus {
     max-width: 100%;
     height: auto;
     opacity: 0.9;
-    /* slightly fade logo so it doesn't overpower the text */
 }
 
 
-/* F. Media Queries */
-/* ==========================================
-   F. MEDIA QUERIES (RESPONSIVE MOBILE)
-   ========================================== */
+/* ==========================================================================
+   F. RESPONSIVE MEDIA QUERIES, ACCESSIBILITY & PRINT
+   ========================================================================== */
+
+/* F.1 Tablet & Desktop Breakpoints */
 @media (max-width: 1100px) {
     .page-jobs .role-meta {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
-/* tablet breakpoint */
+@media (max-width: 1024px) {
+
+    /* About Page */
+    .team-grid,
+    .workflow-steps,
+    .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 900px) {
+
+    /* Shared Footer */
+    .site-footer {
+        padding-bottom: 72px;
+    }
+
+    .site-footer__inner {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "brand"
+            "ack"
+            "bottom";
+    }
+
+    .site-footer__bottom {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Jobs Page */
     .page-jobs .hero__grid {
         grid-template-columns: 1fr;
     }
 
-    /* reset aside */
     .page-jobs .overview {
         display: flex;
         flex-direction: column;
@@ -2976,10 +2490,80 @@ textarea:focus {
     .page-jobs .role-meta {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    /* Apply Page */
+    .apply-page .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .apply-page .stepper-bar {
+        overflow-x: auto;
+    }
 }
 
-/* mobile breakpoint */
+@media (max-width: 768px) {
+
+    /* About Page */
+    .ack-layout {
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    .ack-visual {
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
+    }
+
+    .about-hero__inner {
+        flex-direction: column;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .team-grid,
+    .workflow-steps,
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fun-facts-table th,
+    .fun-facts-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .fun-facts-table thead {
+        display: none;
+    }
+
+    .fun-facts-table tbody th {
+        background-color: var(--color-primary);
+        color: var(--color-surface);
+    }
+}
+
+/* F.2 Mobile Breakpoint */
 @media (max-width: 600px) {
+
+    /* Shared Header & Chatbot */
+    .site-header__inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .site-bot {
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .site-bot__badge {
+        display: none;
+    }
+
+    /* Jobs Page */
     .page-jobs .role-meta {
         grid-template-columns: 1fr;
     }
@@ -2993,7 +2577,6 @@ textarea:focus {
         padding: 18px 16px;
     }
 
-    /* full screen modal on mobile */
     .page-jobs .role-modal {
         padding: 0;
     }
@@ -3007,11 +2590,26 @@ textarea:focus {
     .page-jobs .role-tabs {
         border-radius: 0;
     }
+
+    /* Apply Page */
+    .apply-page .form-row {
+        flex-direction: column;
+    }
+
+    .apply-page .col-13,
+    .apply-page .col-23,
+    .apply-page .col-12 {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    .apply-page .radio-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
-/* accessibility and print */
-/* ---- F.2 Accessibility, Reduced Motion, and Print ---- */
-/* High-visibility 3px keyboard focus ring with 2px offset across all interactive elements */
+/* F.3 Focus States & Reduced Motion */
 :focus-visible {
     outline: 3px solid var(--color-primary);
     outline-offset: 2px;
@@ -3035,13 +2633,14 @@ textarea:focus {
     .site-nav a,
     .btn,
     .page-jobs .pill,
+    .page-jobs .hero-slider_slide>a,
     .page-jobs .hero-slider__dot,
     .page-jobs .see-more>summary::after {
         transition: none;
     }
 }
 
-/* print styles */
+/* F.4 Print Styles */
 @media print {
 
     .site-bot,
@@ -3076,61 +2675,5 @@ textarea:focus {
         float: none;
         width: auto;
         margin: 0 0 16px 0;
-    }
-
-    @media (max-width: 1024px) {
-
-        .team-grid,
-        .workflow-steps,
-        .tools-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 768px) {
-
-
-        .ack-layout {
-            flex-direction: column;
-            gap: 32px;
-        }
-
-        .ack-visual {
-            width: 100%;
-            max-width: 200px;
-
-            margin: 0 auto;
-        }
-
-        .about-hero__inner {
-            flex-direction: column;
-        }
-
-        .info-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .team-grid,
-        .workflow-steps,
-        .tools-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .fun-facts-table th,
-        .fun-facts-table td {
-            display: block;
-            width: 100%;
-        }
-
-        /* hide table header on mobile */
-        /* Hide standard header on small mobile to stack */
-        .fun-facts-table thead {
-            display: none;
-        }
-
-        .fun-facts-table tbody th {
-            background-color: var(--color-primary);
-            color: var(--color-surface);
-        }
     }
 }
