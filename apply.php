@@ -11,8 +11,8 @@ $extraHead = '<style>
         }
     </style>';
 
-include 'includes/header.php';
-include 'includes/nav.php';
+include 'header.inc';
+include 'nav.inc';
 ?>
 
 <!-- Main Content Area -->
@@ -438,4 +438,4 @@ include 'includes/nav.php';
     </div>
 </main>
 
-<?php include 'includes/footer.php'; ?>
+<?php include 'footer.inc'; ?>
