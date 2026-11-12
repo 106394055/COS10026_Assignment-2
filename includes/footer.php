@@ -7,7 +7,7 @@
         </summary>
         <div class="site-bot__panel">
             <p class="site-bot__title">VinFast Career Assistant</p>
-            <p class="site-bot__text">Need help applying? Quote a 5-character reference (VF001–VF004) on the Apply page before <time datetime="2026-10-09">09 October 2026</time>.</p>
+            <p class="site-bot__text">Need help applying? Quote a 5-character reference (VF001-VF004) on the Apply page before <time datetime="2026-10-09">09 October 2026</time>.</p>
             <ul class="site-bot__links">
                 <li><a href="jobs.php">Browse open roles</a></li>
                 <li><a href="apply.php">Go to application form</a></li>
@@ -17,7 +17,7 @@
     </details>
 </div>
 
-<!-- Footer -->
+<!-- Site Footer -->
 <footer class="site-footer">
     <div class="container site-footer__inner">
         <div class="site-footer__brand">

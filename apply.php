@@ -136,4 +136,306 @@ include 'includes/nav.php';
                                 </fieldset>
                             </div>
                         </div>
-                        </
+                    </fieldset>
+
+                    <!-- Section 2: Contact Details -->
+                    <fieldset class="form-section">
+                        <legend class="section-header">
+                            <span class="section-header__num">2</span>
+                            <span class="section-header__title">Contact Details</span>
+                            <span class="section-header__desc">Provide your current contact information.</span>
+                        </legend>
+
+                        <!-- Row 1: Email Address (full width) -->
+                        <div class="form-row">
+                            <div class="form-group col-full">
+                                <label for="email">Email Address <span class="required">*</span></label>
+                                <input type="email" id="email" name="email" placeholder="e.g. example@email.com"
+                                    required>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Phone Number -->
+                        <div class="form-row">
+                            <div class="form-group col-full">
+                                <label for="phone">Phone Number <span class="required">*</span></label>
+                                <input type="tel" id="phone" name="phone" pattern="[0-9]{8,12}" maxlength="12"
+                                    inputmode="numeric" placeholder="e.g. 0412345678" required>
+                                <span class="field-hint">8-12 digits</span>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: State and Postcode on the same line (each field occupies 1/2 of the width) -->
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <label for="state">State <span class="required">*</span></label>
+                                <select id="state" name="state" required>
+                                    <option value="" disabled selected>Select a state</option>
+                                    <option value="VIC">VIC - Victoria</option>
+                                    <option value="NSW">NSW - New South Wales</option>
+                                    <option value="QLD">QLD - Queensland</option>
+                                    <option value="NT">NT - Northern Territory</option>
+                                    <option value="WA">WA - Western Australia</option>
+                                    <option value="SA">SA - South Australia</option>
+                                    <option value="TAS">TAS - Tasmania</option>
+                                    <option value="ACT">ACT - Australian Capital Territory</option>
+                                </select>
+                                <span class="field-hint">VIC, NSW, QLD, NT, WA, SA, TAS, ACT</span>
+                            </div>
+
+                            <div class="form-group col-12">
+                                <label for="postcode">Postcode <span class="required">*</span></label>
+                                <input type="text" id="postcode" name="postcode" placeholder="e.g. 3000"
+                                    pattern="\d{4}" maxlength="4" required>
+                                <span class="field-hint">Exactly 4 digits</span>
+                            </div>
+                        </div>
+
+                        <!-- Row 4: Street Address 1 row alone -->
+                        <div class="form-row">
+                            <div class="form-group col-full">
+                                <label for="streetAddress">Street Address <span
+                                        class="required">*</span></label>
+                                <input type="text" id="streetAddress" name="streetAddress"
+                                    placeholder="e.g. 123 Nguyen Van Cu Street" maxlength="40" required>
+                                <span class="field-hint">Maximum 40 characters</span>
+                            </div>
+                        </div>
+
+                        <!-- Row 5: Suburb/Town 1 row alone -->
+                        <div class="form-row">
+                            <div class="form-group col-full">
+                                <label for="suburb">Suburb/Town <span class="required">*</span></label>
+                                <input type="text" id="suburb" name="suburb" placeholder="e.g. District 1"
+                                    maxlength="40" required>
+                                <span class="field-hint">Maximum 40 characters</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Section 3: Skills and Experience -->
+                    <fieldset class="form-section">
+                        <legend class="section-header">
+                            <span class="section-header__num">3</span>
+                            <span class="section-header__title">Skills and Experience</span>
+                            <span class="section-header__desc">Select the skills that best match your
+                                experience.</span>
+                        </legend>
+
+                        <div class="form-group col-full">
+                            <label for="primarySkill">
+                                Primary Skill <span class="required">*</span>
+                            </label>
+                            <select id="primarySkill" name="primarySkill" required>
+                                <option value="" disabled selected>
+                                    Select your strongest skill
+                                </option>
+                                <option value="HTML/CSS">HTML/CSS</option>
+                                <option value="UI/UX Design">UI/UX Design</option>
+                                <option value="Data Analysis">Data Analysis</option>
+                                <option value="Project Management">Project Management</option>
+                                <option value="Digital Marketing">Digital Marketing</option>
+                                <option value="Customer Service">Customer Service</option>
+                                <option value="E-commerce">E-commerce</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-full">
+                            <fieldset class="skills-fieldset">
+                                <legend class="skills-legend">
+                                    Additional Skills (Select all that apply)
+                                </legend>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-item" for="skill-html">
+                                        <input type="checkbox" id="skill-html" name="skills[]" value="HTML/CSS">
+                                        HTML / CSS
+                                    </label>
+                                    <label class="checkbox-item" for="skill-uiux">
+                                        <input type="checkbox" id="skill-uiux" name="skills[]"
+                                            value="UI/UX Design">
+                                        UI/UX Design
+                                    </label>
+                                    <label class="checkbox-item" for="skill-data">
+                                        <input type="checkbox" id="skill-data" name="skills[]"
+                                            value="Data Analysis"> Data
+                                        Analysis
+                                    </label>
+                                    <label class="checkbox-item" for="skill-pm">
+                                        <input type="checkbox" id="skill-pm" name="skills[]"
+                                            value="Project Management">
+                                        Project Management
+                                    </label>
+                                    <label class="checkbox-item" for="skill-marketing">
+                                        <input type="checkbox" id="skill-marketing" name="skills[]"
+                                            value="Digital Marketing">
+                                        Digital Marketing
+                                    </label>
+                                    <label class="checkbox-item" for="skill-cs">
+                                        <input type="checkbox" id="skill-cs" name="skills[]"
+                                            value="Customer Service">
+                                        Customer Service
+                                    </label>
+                                    <label class="checkbox-item" for="skill-ecommerce">
+                                        <input type="checkbox" id="skill-ecommerce" name="skills[]"
+                                            value="E-commerce">
+                                        E-commerce
+                                    </label>
+                                    <label class="checkbox-item" for="skill-other">
+                                        <input type="checkbox" id="skill-other" name="skills[]" value="Other">
+                                        Other
+                                        (please specify)
+                                    </label>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="form-group col-full">
+                            <label for="otherSkills">Other Skills (Optional)</label>
+                            <textarea id="otherSkills" name="otherSkills" rows="3"
+                                placeholder="e.g. Languages, software tools, certifications, etc."
+                                maxlength="200"></textarea>
+                            <span class="field-hint">Maximum 200 characters</span>
+                        </div>
+                    </fieldset>
+
+                    <!-- Section 4: Document Upload -->
+                    <fieldset class="form-section form-section--upload">
+                        <legend class="section-header">
+                            <span class="section-header__num">4</span>
+                            <span class="section-header__title">
+                                Upload Supporting Documents
+                            </span>
+                            <span class="section-header__desc">You can upload any relevant documents such as
+                                your
+                                CV, cover letter, portfolio or certificates.</span>
+                        </legend>
+
+                        <div class="form-group col-full">
+                            <label for="documentUpload">
+                                Select Document <span class="required">*</span>
+                            </label>
+                            <input type="file" id="documentUpload" name="documentUpload[]" accept=".pdf,.doc,.docx,.jpg,.png" multiple required>
+                            <span class="field-hint">
+                                Accepted file types: PDF, DOC, DOCX, JPG and PNG.
+                            </span>
+                        </div>
+                    </fieldset>
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn--secondary">
+                            <span class="btn__icon">🔄</span> Reset Form
+                        </button>
+                        <button type="submit" class="btn btn--primary">
+                            <span class="btn__icon">✈️</span> Submit Application
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Right Column: Sidebar -->
+            <aside class="sidebar-column">
+                <div class="card card--tips">
+                    <div class="card__header">
+                        <span class="card__icon text-yellow">💡</span>
+                        <h2>Application Tips</h2>
+                    </div>
+                    <ul>
+                        <li>Make sure all required fields are completed.</li>
+                        <li>Use a valid email address and phone number.</li>
+                        <li>You can upload multiple files (e.g. CV, portfolio, cover letter, certificates).</li>
+                        <li>Accepted file types: PDF, DOC, DOCX, JPG, PNG.</li>
+                        <li>Maximum file size: 5 MB per file.</li>
+                    </ul>
+                </div>
+
+                <div class="card card--security">
+                    <div class="card__header">
+                        <span class="card__icon text-green">🛡️</span>
+                        <h2>Your Information is Secure</h2>
+                    </div>
+                    <p>
+                        This website is an academic student project.
+                        Application submissions are processed through the
+                        Swinburne form testing service and are not actual
+                        VinFast recruitment applications.
+                        Please do not submit sensitive personal information.
+                    </p>
+                </div>
+
+                <div class="card card--help">
+                    <div class="card__header">
+                        <span class="card__icon text-blue">🎧</span>
+                        <h2>Need Help?</h2>
+                    </div>
+                    <p>If you have any questions about the application process, please contact our recruitment
+                        team.
+                    </p>
+                    <a href="mailto:careers@vinfast.com" class="email-link">✉️ careers@vinfast.com</a>
+                </div>
+
+                <div class="card card--timeline">
+                    <div class="card__header">
+                        <span class="card__icon text-blue">📅</span>
+                        <h2>Application Timeline</h2>
+                    </div>
+
+                    <ul class="timeline-list">
+                        <li class="timeline-item">
+                            <div class="timeline-badge bg-blue">📢</div>
+                            <div class="timeline-content">
+                                <span class="date">September 19, 2026</span>
+                                <h3>Application opens</h3>
+                                <p>Start submitting your application.</p>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-badge bg-purple">📄</div>
+                            <div class="timeline-content">
+                                <span class="date">October 09, 2026</span>
+                                <h3>Application deadline</h3>
+                                <p>You can no longer apply after this day.</p>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-badge bg-orange">⏳</div>
+                            <div class="timeline-content">
+                                <span class="date">October 20, 2026</span>
+                                <h3>Application time</h3>
+                                <p>Applications are currently under review by our HR team.</p>
+                            </div>
+                        </li>
+                        <li class="timeline-item timeline-item--highlight">
+                            <div class="timeline-badge bg-teal">📝</div>
+                            <div class="timeline-content">
+                                <span class="date">November 01, 2026</span>
+                                <h3>Shortlist announcement</h3>
+                                <p>You will be notified whether you are selected for an interview.</p>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-badge bg-purple">👥</div>
+                            <div class="timeline-content">
+                                <span class="date">November 29, 2026</span>
+                                <h3>Interview</h3>
+                                <p>Selected candidates will be invited to an interview.</p>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-badge bg-yellow">🏆</div>
+                            <div class="timeline-content">
+                                <span class="date">December 05, 2026</span>
+                                <h3>Final results announcement</h3>
+                                <p>You will receive the final recruitment result.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+</main>
+
+<?php include 'includes/footer.php'; ?>
