@@ -856,8 +856,12 @@ dd {
 
 /* C.1 Hero & CSS-Only Slideshow */
 .page-jobs .hero {
-    padding-top: 40px;
-    padding-bottom: 24px;
+    /* Same blue gradient used by the Apply page; full-width only for Jobs hero. */
+    background: linear-gradient(135deg, #0a1f4d 0%, #0b5fff 100%);
+    color: #ffffff;
+    padding-top: clamp(40px, 4.5vw, 56px);
+    padding-bottom: clamp(40px, 4.5vw, 56px);
+    margin-bottom: 24px;
 }
 
 .page-jobs .hero__grid {
@@ -872,7 +876,7 @@ dd {
     font-size: 0.95rem;
     font-weight: 700;
     letter-spacing: 0.03em;
-    color: var(--color-primary-dark);
+    color: #eff6ff;
 }
 
 .page-jobs .hero__title {
@@ -881,7 +885,7 @@ dd {
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: -0.02em;
-    color: var(--color-navy);
+    color: #ffffff;
 }
 
 .page-jobs .hero__subtitle {
@@ -889,13 +893,14 @@ dd {
     font-size: clamp(1.25rem, 2.4vw, 1.75rem);
     font-weight: 700;
     line-height: 1.2;
-    color: var(--color-navy);
+    color: #ffffff;
 }
 
 .page-jobs .hero__text {
     max-width: 52ch;
     margin-bottom: 20px;
     font-size: 1.05rem;
+    color: #eff6ff;
 }
 
 .page-jobs .hero__deadline {
@@ -904,8 +909,10 @@ dd {
     min-height: 48px;
     margin-bottom: 0;
     padding: 10px 20px;
-    background-color: var(--color-primary);
-    color: var(--color-surface);
+    background-color: #ffffff;
+    color: #0a1f4d;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 16px rgba(3, 22, 64, 0.18);
     border-radius: 10px;
     font-weight: 700;
 }
@@ -922,8 +929,8 @@ dd {
     width: 100%;
     overflow: hidden;
     border-radius: 14px;
-    border: 1px solid var(--color-border);
-    box-shadow: 0 10px 30px rgba(10, 31, 77, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 16px 36px rgba(3, 22, 64, 0.3);
     background-color: var(--color-navy);
 }
 
@@ -2719,24 +2726,48 @@ html:has(.role-modal:target) {
     }
 }
 
-.page-jobs .hero {
-    background: linear-gradient(135deg, #0a1f4d 0%, #0b5fff 100%);
-    color: #ffffff;
-    padding-top: clamp(40px, 4.5vw, 56px);
-    padding-bottom: clamp(40px, 4.5vw, 56px);
-    margin-bottom: 24px;
+/* ===========================================================
+   Jobs page — fix the How to Apply responsive layout.
+   The original 1fr auto grid squeezed the steps beside the CTA.
+   Scoped to .page-jobs so Home, Apply and About stay unchanged.
+   =========================================================== */
+@media (max-width: 1200px) {
+    .page-jobs .how-to__body {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+        align-items: stretch;
+    }
+
+    .page-jobs .how-to ol,
+    .page-jobs .how-to li,
+    .page-jobs .how-to li > span {
+        min-width: 0;
+    }
+
+    .page-jobs .how-to__cta {
+        justify-self: start;
+        max-width: 100%;
+        white-space: normal;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
 }
-.page-jobs .hero__eyebrow { color: #eff6ff; }
-.page-jobs .hero__title,
-.page-jobs .hero__subtitle { color: #ffffff; }
-.page-jobs .hero__text { color: #eff6ff; }
-.page-jobs .hero__deadline {
-    background-color: #ffffff;
-    color: #0a1f4d;
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    box-shadow: 0 4px 16px rgba(3, 22, 64, 0.18);
-}
-.page-jobs .hero__media > .hero-slider {
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    box-shadow: 0 16px 36px rgba(3, 22, 64, 0.3);
+
+@media (max-width: 900px) {
+    .page-jobs .how-to ol {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+        width: 100%;
+    }
+
+    .page-jobs .how-to li {
+        gap: 12px;
+    }
+
+    .page-jobs .how-to__cta {
+        display: flex;
+        width: 100%;
+        min-width: 0;
+        padding: 12px 16px;
+    }
 }
