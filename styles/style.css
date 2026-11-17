@@ -2677,3 +2677,44 @@ html:has(.role-modal:target) {
         margin: 0 0 16px 0;
     }
 }
+
+/* Administrator login link in the shared navigation.
+   Scoped to .site-nav to preserve styling on other page components. */
+.site-nav .site-nav__admin-item {
+    margin-left: 12px;
+}
+
+.site-nav a.site-nav__admin {
+    min-height: 44px;
+    padding: 9px 19px;
+    border: 2px solid #0755dc;
+    border-radius: 999px;
+    background: #0b5fff;
+    color: #ffffff;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 3px 10px rgba(11, 95, 255, 0.18);
+    transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.site-nav a.site-nav__admin:hover,
+.site-nav a.site-nav__admin:focus-visible,
+.site-nav a.site-nav__admin[aria-current="page"] {
+    background: #083baf;
+    border-color: #083baf;
+    border-bottom-color: #083baf;
+    color: #ffffff;
+}
+
+@media (max-width: 600px) {
+    .site-nav .site-nav__admin-item {
+        margin-left: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-nav a.site-nav__admin {
+        transition: none;
+    }
+}
