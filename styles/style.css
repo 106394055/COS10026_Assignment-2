@@ -2718,3 +2718,25 @@ html:has(.role-modal:target) {
         transition: none;
     }
 }
+
+.page-jobs .hero {
+    background: linear-gradient(135deg, #0a1f4d 0%, #0b5fff 100%);
+    color: #ffffff;
+    padding-top: clamp(40px, 4.5vw, 56px);
+    padding-bottom: clamp(40px, 4.5vw, 56px);
+    margin-bottom: 24px;
+}
+.page-jobs .hero__eyebrow { color: #eff6ff; }
+.page-jobs .hero__title,
+.page-jobs .hero__subtitle { color: #ffffff; }
+.page-jobs .hero__text { color: #eff6ff; }
+.page-jobs .hero__deadline {
+    background-color: #ffffff;
+    color: #0a1f4d;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 16px rgba(3, 22, 64, 0.18);
+}
+.page-jobs .hero__media > .hero-slider {
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 16px 36px rgba(3, 22, 64, 0.3);
+}
