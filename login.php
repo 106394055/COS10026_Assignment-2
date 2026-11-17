@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Sign In | VinFast Digital Retail Careers';
-$pageDescription = 'Preview of the secure manager sign-in page for VinFast Digital Retail Careers.';
+$pageDescription = 'Administrator sign-in for VinFast Digital Retail Careers.';
 $pageAuthor = 'Duong Nguyen Khoi';
 $bodyClass = 'page-login';
 $currentPage = 'login';
@@ -166,12 +166,6 @@ $extraHead = <<<'LOGIN_STYLES'
     border-color: var(--color-primary, #0b5fff);
     box-shadow: 0 0 0 4px rgba(11, 95, 255, .15);
 }
-.page-login .login-hint {
-    margin: 7px 0 0;
-    color: #64748b;
-    font-size: .79rem;
-    line-height: 1.5;
-}
 .page-login .login-submit {
     display: block;
     width: 100%;
@@ -188,25 +182,8 @@ $extraHead = <<<'LOGIN_STYLES'
     text-align: center;
 }
 .page-login .login-submit:disabled {
-    opacity: .58;
+    opacity: .82;
     cursor: not-allowed;
-}
-.page-login .login-notice {
-    display: flex;
-    align-items: flex-start;
-    gap: 11px;
-    margin-top: 18px;
-    padding: 14px 15px;
-    border: 1px solid #cfe0fb;
-    border-radius: 10px;
-    background: #f1f6ff;
-    color: #27456e;
-    font-size: .84rem;
-    line-height: 1.6;
-}
-.page-login .login-notice svg {
-    flex-shrink: 0;
-    margin-top: 2px;
 }
 .page-login .login-bottom {
     margin: 23px 0 0;
@@ -265,7 +242,7 @@ require __DIR__ . '/nav.inc';
                             <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
                         </svg>
                     </span>
-                    <span>Manager access will be protected by server-side authentication.</span>
+                    <span>Restricted access · Authorized recruitment staff only</span>
                 </div>
             </section>
 
@@ -274,27 +251,19 @@ require __DIR__ . '/nav.inc';
                 <h2 id="login-title">Welcome back</h2>
                 <p class="login-subtitle">Sign in to manage recruitment applications and review candidate information.</p>
 
-                <!-- Preview UI only. No submission form is used, preventing credentials from being transmitted. -->
-                <div class="login-fields" role="group" aria-label="Login form preview">
+                <!-- The interface is prepared for future server-side login. No credentials are transmitted yet. -->
+                <div class="login-fields" role="group" aria-label="Administrator sign in">
                     <div class="login-field">
                         <label for="login-username">Username</label>
-                        <input id="login-username" name="username-preview" type="text" autocomplete="off" placeholder="Enter your username" aria-describedby="login-preview-notice">
+                        <input id="login-username" type="text" autocomplete="username" placeholder="Enter your username">
                     </div>
                     <div class="login-field">
                         <label for="login-password">Password</label>
-                        <input id="login-password" name="password-preview" type="password" autocomplete="off" placeholder="Enter your password" aria-describedby="login-preview-notice">
-                        <p class="login-hint">Authentication and password verification will be enabled in the next development step.</p>
+                        <input id="login-password" type="password" autocomplete="current-password" placeholder="Enter your password">
                     </div>
                 </div>
 
-                <button class="login-submit" type="button" disabled aria-describedby="login-preview-notice">Sign in</button>
-                <div class="login-notice" role="status" id="login-preview-notice">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/><path d="M12 11v6M12 7h.01"/>
-                    </svg>
-                    <span><strong>Preview mode:</strong> Sign-in is not enabled. This page does not send or store usernames or passwords. Please do not enter real credentials yet.</span>
-                </div>
-
+                <button class="login-submit" type="button" disabled title="Sign-in is not yet available">Sign in</button>
                 <p class="login-bottom">Looking for opportunities? <a href="jobs.php">Explore open jobs</a></p>
             </section>
         </div>
