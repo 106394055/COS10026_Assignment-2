@@ -9,25 +9,33 @@ $pageDescription = "Meet Team HCPS, the four Swinburne students who designed and
 $currentPage     = "about";
 $htmlClass       = "no-js";
 
-require_once "db_connect.php";   // gives us $conn (see settings.php for the credentials)
+require_once "db_connect.php";   // shared connection by the team: gives us $conn (settings.php holds the credentials)
 
 // ---- Query: all members, in display order --------------------------------
 $members  = array();
-$db_error = (!isset($conn) || $conn === false);   // also safe while db_connect.php is still empty
+$db_error = (!isset($conn) || !($conn instanceof mysqli));
 
 if (!$db_error) {
     $query = "SELECT member_id, student_id, full_name, initials, photo_path, photo_alt,
                      role_title, contribution_part1, contribution_part2, quote_vi, quote_en
               FROM about
-              ORDER BY display_order ASC";
-    $result = mysqli_query($conn, $query);
+              ORDER BY display_order ASC";   // no user input in this query, so no injection risk
 
-    if ($result) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $members[] = $row;
+    // PHP 8.1+ may throw an exception instead of returning false on a failed query,
+    // so both cases are handled: the visitor only ever sees a friendly message.
+    try {
+        $result = mysqli_query($conn, $query);
+
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $members[] = $row;
+            }
+            mysqli_free_result($result);
+        } else {
+            $db_error = true;
         }
-        mysqli_free_result($result);
-    } else {
+    } catch (Exception $e) {
+        error_log("about.php query failed: " . $e->getMessage());   // details go to the log only
         $db_error = true;
     }
     mysqli_close($conn);
