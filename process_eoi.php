@@ -276,7 +276,9 @@ if (empty($errors)) {
     }
 }
 
-mysqli_close($conn);
+if (isset($conn) && $conn instanceof mysqli) {
+    mysqli_close($conn);
+}
 
 // Page layout variables (same structure as apply.php)
 $pageTitle = (empty($errors) && empty($dbError)) ? "Application Submitted - VinFast" : "Application Error - VinFast";
