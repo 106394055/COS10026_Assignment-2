@@ -56,7 +56,7 @@ include 'nav.inc';
         <!-- Content Grid: Form + Sidebar -->
         <div class="content-grid">
 
-            <!-- Left Column: Form -->
+            <!-- Left Column: Form (Client-side validation completely disabled) -->
             <div class="form-column">
                 <form id="applyForm" method="post" enctype="multipart/form-data"
                     action="process_eoi.php" novalidate>
@@ -76,8 +76,8 @@ include 'nav.inc';
                         <div class="form-row">
                             <div class="form-group col-13">
                                 <label for="jobRef">Job Reference Number <span class="required">*</span></label>
-                                <select id="jobRef" name="jobRef" required>
-                                    <option value="" disabled selected>Select a job position</option>
+                                <select id="jobRef" name="jobRef">
+                                    <option value="" selected>Select a job position</option>
                                     <option value="VF001">VF001 - Software & Web Development</option>
                                     <option value="VF002">VF002 - Product & Retail Merchandising</option>
                                     <option value="VF003">VF003 - Data & Analytics</option>
@@ -88,15 +88,13 @@ include 'nav.inc';
 
                             <div class="form-group col-13">
                                 <label for="firstName">First Name <span class="required">*</span></label>
-                                <input type="text" id="firstName" name="firstName" placeholder="e.g. Nguyen"
-                                    pattern="[A-Za-z\s]{1,20}" maxlength="20" required>
+                                <input type="text" id="firstName" name="firstName" placeholder="e.g. Nguyen">
                                 <span class="field-hint">Maximum 20 letters (A-Z)</span>
                             </div>
 
                             <div class="form-group col-13">
                                 <label for="lastName">Last Name <span class="required">*</span></label>
-                                <input type="text" id="lastName" name="lastName" placeholder="e.g. An"
-                                    pattern="[A-Za-z\s'-]{1,20}" maxlength="20" required>
+                                <input type="text" id="lastName" name="lastName" placeholder="e.g. An">
                                 <span class="field-hint">Maximum 20 letters (A-Z)</span>
                             </div>
                         </div>
@@ -105,8 +103,7 @@ include 'nav.inc';
                         <div class="form-row">
                             <div class="form-group col-13">
                                 <label for="dob">Date of Birth <span class="required">*</span></label>
-                                <input type="text" id="dob" name="dob" placeholder="dd/mm/yyyy"
-                                    pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/(19|20)\d{2}" required>
+                                <input type="text" id="dob" name="dob" placeholder="dd/mm/yyyy">
                                 <span class="field-hint">Format: dd/mm/yyyy</span>
                             </div>
 
@@ -116,8 +113,7 @@ include 'nav.inc';
                                     </legend>
                                     <div class="radio-group">
                                         <label class="radio-item" for="gender-female">
-                                            <input type="radio" id="gender-female" name="gender" value="female"
-                                                required> Female
+                                            <input type="radio" id="gender-female" name="gender" value="female"> Female
                                         </label>
                                         <label class="radio-item" for="gender-male">
                                             <input type="radio" id="gender-male" name="gender" value="male">
@@ -150,8 +146,7 @@ include 'nav.inc';
                         <div class="form-row">
                             <div class="form-group col-full">
                                 <label for="email">Email Address <span class="required">*</span></label>
-                                <input type="email" id="email" name="email" placeholder="e.g. example@email.com"
-                                    required>
+                                <input type="text" id="email" name="email" placeholder="e.g. example@email.com">
                             </div>
                         </div>
 
@@ -159,8 +154,7 @@ include 'nav.inc';
                         <div class="form-row">
                             <div class="form-group col-full">
                                 <label for="phone">Phone Number <span class="required">*</span></label>
-                                <input type="tel" id="phone" name="phone" pattern="[0-9]{8,12}" maxlength="12"
-                                    inputmode="numeric" placeholder="e.g. 0412345678" required>
+                                <input type="text" id="phone" name="phone" placeholder="e.g. 0412345678">
                                 <span class="field-hint">8-12 digits</span>
                             </div>
                         </div>
@@ -169,8 +163,8 @@ include 'nav.inc';
                         <div class="form-row">
                             <div class="form-group col-12">
                                 <label for="state">State <span class="required">*</span></label>
-                                <select id="state" name="state" required>
-                                    <option value="" disabled selected>Select a state</option>
+                                <select id="state" name="state">
+                                    <option value="" selected>Select a state</option>
                                     <option value="VIC">VIC - Victoria</option>
                                     <option value="NSW">NSW - New South Wales</option>
                                     <option value="QLD">QLD - Queensland</option>
@@ -185,9 +179,8 @@ include 'nav.inc';
 
                             <div class="form-group col-12">
                                 <label for="postcode">Postcode <span class="required">*</span></label>
-                                <input type="text" id="postcode" name="postcode" placeholder="e.g. 3000"
-                                    pattern="\d{4}" maxlength="4" required>
-                                <span class="field-hint">Exactly 4 digits</span>
+                                <input type="text" id="postcode" name="postcode" placeholder="e.g. 3000">
+                                <span class="field-hint">Exactly 4 digits matching the selected state</span>
                             </div>
                         </div>
 
@@ -197,7 +190,7 @@ include 'nav.inc';
                                 <label for="streetAddress">Street Address <span
                                         class="required">*</span></label>
                                 <input type="text" id="streetAddress" name="streetAddress"
-                                    placeholder="e.g. 123 Nguyen Van Cu Street" maxlength="40" required>
+                                    placeholder="e.g. 123 Nguyen Van Cu Street">
                                 <span class="field-hint">Maximum 40 characters</span>
                             </div>
                         </div>
@@ -206,8 +199,7 @@ include 'nav.inc';
                         <div class="form-row">
                             <div class="form-group col-full">
                                 <label for="suburb">Suburb/Town <span class="required">*</span></label>
-                                <input type="text" id="suburb" name="suburb" placeholder="e.g. District 1"
-                                    maxlength="40" required>
+                                <input type="text" id="suburb" name="suburb" placeholder="e.g. District 1">
                                 <span class="field-hint">Maximum 40 characters</span>
                             </div>
                         </div>
@@ -226,8 +218,8 @@ include 'nav.inc';
                             <label for="primarySkill">
                                 Primary Skill <span class="required">*</span>
                             </label>
-                            <select id="primarySkill" name="primarySkill" required>
-                                <option value="" disabled selected>
+                            <select id="primarySkill" name="primarySkill">
+                                <option value="" selected>
                                     Select your strongest skill
                                 </option>
                                 <option value="HTML/CSS">HTML/CSS</option>
@@ -290,10 +282,9 @@ include 'nav.inc';
                         </div>
 
                         <div class="form-group col-full">
-                            <label for="otherSkills">Other Skills (Optional)</label>
+                            <label for="otherSkills">Other Skills (Required if "Other" is checked)</label>
                             <textarea id="otherSkills" name="otherSkills" rows="3"
-                                placeholder="e.g. Languages, software tools, certifications, etc."
-                                maxlength="200"></textarea>
+                                placeholder="e.g. Languages, software tools, certifications, etc."></textarea>
                             <span class="field-hint">Maximum 200 characters</span>
                         </div>
                     </fieldset>
@@ -303,7 +294,7 @@ include 'nav.inc';
                         <legend class="section-header">
                             <span class="section-header__num">4</span>
                             <span class="section-header__title">
-                                Upload Supporting Documents
+                                Upload Supporting Documents (Optional)
                             </span>
                             <span class="section-header__desc">You can upload any relevant documents such as
                                 your
@@ -312,11 +303,11 @@ include 'nav.inc';
 
                         <div class="form-group col-full">
                             <label for="documentUpload">
-                                Select Document <span class="required">*</span>
+                                Select Document
                             </label>
-                            <input type="file" id="documentUpload" name="documentUpload[]" accept=".pdf,.doc,.docx,.jpg,.png" multiple required>
+                            <input type="file" id="documentUpload" name="documentUpload[]" multiple>
                             <span class="field-hint">
-                                Accepted file types: PDF, DOC, DOCX, JPG and PNG.
+                                Accepted file types: PDF, DOC, DOCX, JPG and PNG (Max 5 MB per file).
                             </span>
                         </div>
                     </fieldset>
