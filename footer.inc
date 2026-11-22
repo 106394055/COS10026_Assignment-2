@@ -1,3 +1,4 @@
+<!-- Filename: footer.inc | Author: Do Vu Khanh Quynh | Description: Shared chatbot widget and site footer -->
 <!-- Floating VF Chatbot Widget -->
 <div class="site-bot">
     <details class="site-bot__Widget">

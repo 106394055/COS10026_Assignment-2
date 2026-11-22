@@ -56,7 +56,7 @@ include 'nav.inc';
         <!-- Content Grid: Form + Sidebar -->
         <div class="content-grid">
 
-            <!-- Left Column: Form (Client-side validation completely disabled) -->
+            <!-- Left Column: Form (Client-side validation disabled per assignment specs) -->
             <div class="form-column">
                 <form id="applyForm" method="post" enctype="multipart/form-data"
                     action="process_eoi.php" novalidate>
@@ -72,7 +72,7 @@ include 'nav.inc';
                             </span>
                         </legend>
 
-                        <!-- Row 1: Job Ref, First Name, Last Name (each taking up 1/3) -->
+                        <!-- Row 1: Job Ref, First Name, Last Name -->
                         <div class="form-row">
                             <div class="form-group col-13">
                                 <label for="jobRef">Job Reference Number <span class="required">*</span></label>
@@ -99,7 +99,7 @@ include 'nav.inc';
                             </div>
                         </div>
 
-                        <!-- Row 2: Date of Birth (1/3) and Gender (2/3) -->
+                        <!-- Row 2: Date of Birth and Gender -->
                         <div class="form-row">
                             <div class="form-group col-13">
                                 <label for="dob">Date of Birth <span class="required">*</span></label>
@@ -142,7 +142,7 @@ include 'nav.inc';
                             <span class="section-header__desc">Provide your current contact information.</span>
                         </legend>
 
-                        <!-- Row 1: Email Address (full width) -->
+                        <!-- Row 1: Email Address -->
                         <div class="form-row">
                             <div class="form-group col-full">
                                 <label for="email">Email Address <span class="required">*</span></label>
@@ -159,7 +159,7 @@ include 'nav.inc';
                             </div>
                         </div>
 
-                        <!-- Row 3: State and Postcode on the same line (each field occupies 1/2 of the width) -->
+                        <!-- Row 3: State and Postcode -->
                         <div class="form-row">
                             <div class="form-group col-12">
                                 <label for="state">State <span class="required">*</span></label>
@@ -180,11 +180,11 @@ include 'nav.inc';
                             <div class="form-group col-12">
                                 <label for="postcode">Postcode <span class="required">*</span></label>
                                 <input type="text" id="postcode" name="postcode" placeholder="e.g. 3000">
-                                <span class="field-hint">Exactly 4 digits matching the selected state</span>
+                                <span class="field-hint">Exactly 4 digits</span>
                             </div>
                         </div>
 
-                        <!-- Row 4: Street Address 1 row alone -->
+                        <!-- Row 4: Street Address -->
                         <div class="form-row">
                             <div class="form-group col-full">
                                 <label for="streetAddress">Street Address <span
@@ -195,7 +195,7 @@ include 'nav.inc';
                             </div>
                         </div>
 
-                        <!-- Row 5: Suburb/Town 1 row alone -->
+                        <!-- Row 5: Suburb/Town -->
                         <div class="form-row">
                             <div class="form-group col-full">
                                 <label for="suburb">Suburb/Town <span class="required">*</span></label>
@@ -282,7 +282,7 @@ include 'nav.inc';
                         </div>
 
                         <div class="form-group col-full">
-                            <label for="otherSkills">Other Skills (Required if "Other" is checked)</label>
+                            <label for="otherSkills">Other Skills (Optional)</label>
                             <textarea id="otherSkills" name="otherSkills" rows="3"
                                 placeholder="e.g. Languages, software tools, certifications, etc."></textarea>
                             <span class="field-hint">Maximum 200 characters</span>
@@ -294,7 +294,7 @@ include 'nav.inc';
                         <legend class="section-header">
                             <span class="section-header__num">4</span>
                             <span class="section-header__title">
-                                Upload Supporting Documents (Optional)
+                                Upload Supporting Documents
                             </span>
                             <span class="section-header__desc">You can upload any relevant documents such as
                                 your
@@ -307,7 +307,7 @@ include 'nav.inc';
                             </label>
                             <input type="file" id="documentUpload" name="documentUpload[]" multiple>
                             <span class="field-hint">
-                                Accepted file types: PDF, DOC, DOCX, JPG and PNG (Max 5 MB per file).
+                                Accepted file types: PDF, DOC, DOCX, JPG and PNG.
                             </span>
                         </div>
                     </fieldset>

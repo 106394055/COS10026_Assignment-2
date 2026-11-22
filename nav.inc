@@ -1,3 +1,4 @@
+<!-- Filename: nav.inc | Author: Do Vu Khanh Quynh | Description: Shared main navigation bar -->
 <nav class="site-nav" aria-label="Main Navigation">
     <ul>
         <li><a href="index.php" <?php echo (isset($currentPage) && $currentPage == 'home') ? 'aria-current="page"' : ''; ?>>Home</a></li>

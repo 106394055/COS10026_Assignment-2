@@ -1,14 +1,12 @@
 <?php
-// 1. Chặn truy cập trực tiếp bằng URL (nếu không phải gửi form POST từ apply.php thì đẩy về)
+// Block direct URL access
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: apply.php");
     exit();
 }
 
-// 2. Gọi kết nối Database (thông qua db_connect.php -> settings.php)
 require_once("db_connect.php");
 
-// Hàm làm sạch dữ liệu đầu vào theo đúng yêu cầu đề bài
 function sanitise_input($data)
 {
     $data = trim($data);
@@ -17,7 +15,7 @@ function sanitise_input($data)
     return $data;
 }
 
-// 3. Lấy và làm sạch dữ liệu từ $_POST
+// Retrieve and sanitise POST inputs
 $jobRef        = isset($_POST["jobRef"]) ? sanitise_input($_POST["jobRef"]) : "";
 $firstName     = isset($_POST["firstName"]) ? sanitise_input($_POST["firstName"]) : "";
 $lastName      = isset($_POST["lastName"]) ? sanitise_input($_POST["lastName"]) : "";
@@ -38,10 +36,9 @@ foreach ($skillsRaw as $skill) {
     $skillsClean[] = sanitise_input($skill);
 }
 
-// 4. Kiểm tra tính hợp lệ phía Server (Server-side Validation)
+// Server-side validation
 $errors = [];
 
-// Kiểm tra Job Reference Number
 $validJobRefs = ["VF001", "VF002", "VF003", "VF004"];
 if (empty($jobRef)) {
     $errors[] = "Job Reference Number is required.";
@@ -49,21 +46,18 @@ if (empty($jobRef)) {
     $errors[] = "Invalid Job Reference Number selected (must be 5 alphanumeric characters, e.g., VF001-VF004).";
 }
 
-// Kiểm tra First Name
 if (empty($firstName)) {
     $errors[] = "First Name is required.";
 } elseif (!preg_match("/^[A-Za-z\s]{1,20}$/", $firstName)) {
     $errors[] = "First Name must contain only letters and spaces, maximum 20 characters.";
 }
 
-// Kiểm tra Last Name
 if (empty($lastName)) {
     $errors[] = "Last Name is required.";
 } elseif (!preg_match("/^[A-Za-z\s'-]{1,20}$/", $lastName)) {
     $errors[] = "Last Name must contain only letters, spaces, hyphens or apostrophes, maximum 20 characters.";
 }
 
-// Kiểm tra Date of Birth (dd/mm/yyyy và độ tuổi hợp lệ 15 - 80)
 if (empty($dob)) {
     $errors[] = "Date of Birth is required.";
 } elseif (!preg_match("/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d{2}$/", $dob)) {
@@ -85,20 +79,17 @@ if (empty($dob)) {
     }
 }
 
-// Kiểm tra Gender
 $validGenders = ["female", "male", "non-binary", "prefer-not-to-say"];
 if (empty($gender) || !in_array($gender, $validGenders)) {
     $errors[] = "Please select a valid Gender option.";
 }
 
-// Kiểm tra Email
 if (empty($email)) {
     $errors[] = "Email Address is required.";
 } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errors[] = "Please enter a valid Email Address.";
 }
 
-// Kiểm tra Phone Number (8-12 chữ số, cho phép nhập khoảng trắng rồi lọc kiểm tra)
 $phoneDigits = str_replace(" ", "", $phone);
 if (empty($phoneDigits)) {
     $errors[] = "Phone Number is required.";
@@ -106,7 +97,6 @@ if (empty($phoneDigits)) {
     $errors[] = "Phone Number must contain between 8 and 12 digits.";
 }
 
-// Kiểm tra State & Postcode khớp bang theo chuẩn Úc
 $statePostcodeMap = [
     "VIC" => ["3", "8"],
     "NSW" => ["1", "2"],
@@ -133,7 +123,6 @@ if (empty($postcode)) {
     }
 }
 
-// Kiểm tra Street Address & Suburb/Town
 if (empty($streetAddress)) {
     $errors[] = "Street Address is required.";
 } elseif (strlen($streetAddress) > 40) {
@@ -146,7 +135,6 @@ if (empty($suburb)) {
     $errors[] = "Suburb/Town must not exceed 40 characters.";
 }
 
-// Kiểm tra Primary Skill
 $validSkills = [
     "HTML/CSS",
     "UI/UX Design",
@@ -160,7 +148,6 @@ if (empty($primarySkill) || !in_array($primarySkill, $validSkills)) {
     $errors[] = "Please select a valid Primary Skill.";
 }
 
-// Kiểm tra Other Skills nếu có tick chọn "Other"
 if (in_array("Other", $skillsClean) && empty($otherSkills)) {
     $errors[] = "You selected 'Other' under Additional Skills. Please specify your other skills.";
 }
@@ -168,11 +155,11 @@ if (strlen($otherSkills) > 200) {
     $errors[] = "Other Skills description must not exceed 200 characters.";
 }
 
-// Kiểm tra File Upload (nếu ứng viên có tải file lên)
+// Validate uploaded files if provided
 $uploadedFileNames = [];
 if (isset($_FILES["documentUpload"]) && !empty($_FILES["documentUpload"]["name"][0])) {
     $allowedExtensions = ["pdf", "doc", "docx", "jpg", "png"];
-    $maxFileSize = 5 * 1024 * 1024; // 5MB
+    $maxFileSize = 5 * 1024 * 1024;
     $totalFiles = count($_FILES["documentUpload"]["name"]);
 
     for ($i = 0; $i < $totalFiles; $i++) {
@@ -195,19 +182,18 @@ if (isset($_FILES["documentUpload"]) && !empty($_FILES["documentUpload"]["name"]
             $errors[] = "File '$origName' exceeds the maximum size limit of 5 MB.";
         } else {
             $uploadedFileNames[] = [
-                "tmp_name" => $_FILES["documentUpload"]["tmp_name"][$i],
+                "tmp_name"  => $_FILES["documentUpload"]["tmp_name"][$i],
                 "safe_name" => time() . "_" . preg_replace("/[^A-Za-z0-9._-]/", "_", $origName)
             ];
         }
     }
 }
 
-// 5. Nếu KHÔNG có lỗi -> Tạo bảng eoi (nếu chưa có), lưu file & INSERT vào Database
+// Create table if not exists & insert record
 $eoiNumber = null;
 $dbError = "";
 
 if (empty($errors)) {
-    // Lưu file đính kèm vào thư mục uploads/ (nếu có)
     $savedFilesList = [];
     if (!empty($uploadedFileNames)) {
         $uploadDir = __DIR__ . "/uploads/";
@@ -226,7 +212,6 @@ if (empty($errors)) {
     $documentsStr        = !empty($savedFilesList) ? implode(", ", $savedFilesList) : "None";
     $defaultStatus       = "New";
 
-    // Tự động tạo bảng eoi nếu chưa tồn tại (Yêu cầu bắt buộc của đề bài)
     $createTableSql = "CREATE TABLE IF NOT EXISTS eoi (
         EOInumber INT AUTO_INCREMENT PRIMARY KEY,
         job_ref VARCHAR(10) NOT NULL,
@@ -250,7 +235,6 @@ if (empty($errors)) {
     if (!mysqli_query($conn, $createTableSql)) {
         $dbError = "Failed to initialize database table: " . mysqli_error($conn);
     } else {
-        // Dùng Prepared Statement để chống SQL Injection (điểm cộng bảo mật HD)
         $insertSql = "INSERT INTO eoi (
             job_ref, first_name, last_name, dob, gender, email, phone,
             state, postcode, street_address, suburb, primary_skill,
@@ -294,9 +278,9 @@ if (empty($errors)) {
 
 mysqli_close($conn);
 
-// 6. Hiển thị kết quả (Báo lỗi hoặc Xác nhận EOInumber) giữ nguyên giao diện chuẩn của web
-$pageTitle = empty($errors) && empty($dbError) ? "Application Submitted - VinFast" : "Application Error - VinFast";
-$pageDescription = "Expression of Interest submission status.";
+// Page layout variables (same structure as apply.php)
+$pageTitle = (empty($errors) && empty($dbError)) ? "Application Submitted - VinFast" : "Application Error - VinFast";
+$pageDescription = "Expression of Interest submission status at VinFast.";
 $pageAuthor = "Do Vu Khanh Quynh";
 $wrapperClass = "apply-page";
 $currentPage = "apply";
@@ -305,6 +289,7 @@ include 'header.inc';
 include 'nav.inc';
 ?>
 
+<!-- Main Content Area -->
 <main id="main">
     <section class="hero-banner">
         <div class="container hero-content">

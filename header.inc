@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Filename: header.inc | Author: Do Vu Khanh Quynh | Description: Shared HTML head and top site header -->
 <html lang="en" <?php echo isset($htmlClass) ? ' class="' . $htmlClass . '"' : ''; ?>>
 
 <head>
