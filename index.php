@@ -254,25 +254,7 @@
         </a>
       </div>
     </section>
-
-    <!-- Bot  -->
-    <div class="site-bot">
-      <details class="site-bot__Widget">
-        <summary class="site-bot__trigger">
-          <img src="images/Home/Vinfast_chatbot.png" alt="Chatbot Icon" width="48" height="48">
-          <span class="site-bot__badge">Ask VF Bot</span>
-        </summary>
-        <div class="site-bot__panel">
-          <p class="site-bot__title">VinFast Career Assistant</p>
-          <p class="site-bot__text">Need help applying? Quote a 5-character reference (VF001–VF004) on the Apply page before <time datetime="2026-10-09">09 October 2026</time>.</p>
-          <ul class="site-bot__links">
-            <li><a href="job.php">Browse open roles</a></li>
-            <li><a href="apply.php">Go to application form</a></li>
-            <li><a href="mailto:info@vinfast-digital-retail.example">Email recruitment team</a></li>
-          </ul>
-        </div>
-      </details>
-    </div>
+    
   </main>
 
 <?php
