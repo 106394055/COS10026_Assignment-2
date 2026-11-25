@@ -1,6 +1,6 @@
 <?php
 /**
- * COS10026 Part 2 — SCRUM-83: Jobs rendered from MySQL.
+ * COS10026 Part 2 — SCRUM-83/84: Database-driven Jobs display and search.
  * Data source: vinfast_db.jobs (the team's exported jobs.sql).
  * The markup and CSS class names intentionally match the Part 1 Jobs page.
  */
@@ -9,6 +9,28 @@ $pageDescription = 'Explore job opportunities at VinFast Digital Retail.';
 $pageAuthor = 'Duong Nguyen Khoi';
 $bodyClass = 'page-jobs';
 $currentPage = 'jobs';
+
+
+// Scoped search styling: no modifications to the team's shared stylesheet.
+$extraHead = <<<'JOBS_SEARCH_STYLES'
+<style>
+.page-jobs .jobs-search { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 12px 0 16px; }
+.page-jobs .jobs-search__field { flex: 1 1 220px; min-width: 0; }
+.page-jobs .jobs-search__label { display: block; font-weight: 600; color: #0a1f4d; margin-bottom: 6px; }
+.page-jobs .jobs-search__input { width: 100%; min-height: 44px; padding: 10px 12px; font: inherit; color: #0a1f4d; border-radius: 10px; border: 1px solid #96acce; background: #fff; }
+.page-jobs .jobs-search__input:focus-visible { outline: 3px solid #135cf5; outline-offset: 2px; }
+.page-jobs .jobs-search__submit { min-height: 44px; padding: 10px 20px; border: 0; border-radius: 10px; background: #0b5fff; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.page-jobs .jobs-search__submit:hover { background: #084acb; }
+.page-jobs .jobs-search__submit:focus-visible { outline: 3px solid #09275a; outline-offset: 3px; }
+.page-jobs .jobs-search__clear { min-height: 44px; display: inline-flex; align-items: center; color: #0b48ae; font-weight: 600; text-decoration: underline; }
+.page-jobs .jobs-search__status { margin: 8px 0 12px; color: #223452; font-weight: 500; }
+.page-jobs .jobs-search__error { color: #971e27; font-weight: 700; }
+@media (max-width: 600px) {
+  .page-jobs .jobs-search { align-items: stretch; flex-direction: column; }
+  .page-jobs .jobs-search__field, .page-jobs .jobs-search__submit { width: 100%; flex: auto; }
+}
+</style>
+JOBS_SEARCH_STYLES;
 
 /** Escape database text before putting it into HTML or HTML attributes. */
 function h($value): string {
@@ -44,37 +66,62 @@ function job_intro($value): string {
 $jobs = [];
 $dbError = false;
 
-require_once __DIR__ . '/db_connect.php'; // Provides $conn, as established by the team.
-if (isset($conn) && $conn instanceof mysqli) {
-    // Fixed SQL; prepare now so later search/filtering can safely bind parameters.
-    $sql = 'SELECT job_ref, category, job_title, team, reports_to, work_mode,
+// Search is optional: opening jobs.php without ?q= lists all valid jobs.
+$hasSearch = array_key_exists('q', $_GET);
+$searchTerm = ($hasSearch && is_string($_GET['q'])) ? trim($_GET['q']) : '';
+$searchError = '';
+if ($hasSearch && !is_string($_GET['q'])) {
+    $searchError = 'Invalid search request.';
+} elseif (strlen($searchTerm) > 400) {
+    $searchError = 'Please use a shorter search term.';
+}
+
+require_once __DIR__ . '/db_connect.php'; // Shared connection: settings.php -> $conn.
+if (isset($conn) && $conn instanceof mysqli && $searchError === '') {
+    $sql = "SELECT job_ref, category, job_title, team, reports_to, work_mode,
                    type_and_hours, salary, about_role, key_responsibilities,
                    essential_requirements, preferable_criteria, performance_goals,
                    benefits, equal_opportunity, closing_date
-            FROM jobs ORDER BY job_ref';
+            FROM jobs
+            WHERE TRIM(job_ref) <> '' AND TRIM(job_title) <> ''";
+
+    if ($searchTerm !== '') {
+        // Match job titles only. Escape LIKE wildcards so % and _ are literal.
+        $sql .= " AND job_title LIKE ? ESCAPE '!'";
+    }
+    $sql .= ' ORDER BY job_ref';
+
     $stmt = mysqli_prepare($conn, $sql);
-    if ($stmt && mysqli_stmt_execute($stmt)) {
-        $result = mysqli_stmt_get_result($stmt);
-        if ($result !== false) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $jobs[] = $row;
+    if ($stmt) {
+        $bound = true;
+        if ($searchTerm !== '') {
+            $literalSearch = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $searchTerm);
+            $pattern = '%' . $literalSearch . '%';
+            $bound = mysqli_stmt_bind_param($stmt, 's', $pattern);
+        }
+        if ($bound && mysqli_stmt_execute($stmt)) {
+            $result = mysqli_stmt_get_result($stmt);
+            if ($result !== false) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $jobs[] = $row;
+                }
+                mysqli_free_result($result);
+            } else {
+                $dbError = true;
             }
-            mysqli_free_result($result);
         } else {
             $dbError = true;
         }
+        mysqli_stmt_close($stmt);
     } else {
         $dbError = true;
     }
-    if ($stmt) {
-        mysqli_stmt_close($stmt);
-    }
     mysqli_close($conn);
-} else {
+} elseif ($searchError === '') {
     $dbError = true;
 }
 if ($dbError) {
-    error_log('Jobs page: unable to load job listings from MySQL.');
+    error_log('Jobs page: unable to load or search job listings from MySQL.');
 }
 
 require __DIR__ . '/header.inc';
@@ -87,7 +134,7 @@ require __DIR__ . '/nav.inc';
           <p class="hero__eyebrow">CAREERS AT VINFAST</p>
           <h1 id="hero-title" class="hero__title">Open Positions</h1>
           <p class="hero__subtitle">Build the future of digital retail with us.</p>
-          <p class="hero__text"><?= count($jobs) ?> listed roles in digital retail. Explore each position below.</p>
+          <p class="hero__text"><?= count($jobs) ?> <?= count($jobs) === 1 ? 'role' : 'roles' ?> <?= $searchTerm !== '' ? 'match your search.' : 'listed in digital retail.' ?><?= $jobs ? ' Explore each position below.' : '' ?></p>
           <p class="hero__deadline">Application deadlines are listed for each role.</p>
         </div>
         <div class="hero__media">
@@ -182,19 +229,46 @@ require __DIR__ . '/nav.inc';
 
       <section class="panel" aria-labelledby="about-roles-heading">
         <h2 id="about-roles-heading">About these roles</h2>
-        <p>Explore <?= count($jobs) ?> digital retail positions. Select a role to read its complete job description and application deadline.</p>
+        <p>Explore digital retail positions. Select a listed role to read its complete job description and application deadline.</p>
       </section>
 
       <nav id="role-links" class="panel" aria-label="Open a role">
-        <p class="panel__label">Open a role: select a reference to read its full details</p>
+        <p class="panel__label">Find a role by job title</p>
+        <form class="jobs-search" action="jobs.php#role-links" method="get" role="search">
+          <div class="jobs-search__field">
+            <label class="jobs-search__label" for="job-search-term">Search job titles</label>
+            <input class="jobs-search__input" type="search" id="job-search-term" name="q"
+                   value="<?= h($searchTerm) ?>" maxlength="100"
+                   placeholder="e.g. Data Analyst, CRM Manager" autocomplete="off">
+          </div>
+          <button class="jobs-search__submit" type="submit">Search</button>
+          <?php if ($searchTerm !== '' || $searchError !== ''): ?>
+            <a class="jobs-search__clear" href="jobs.php#role-links">Clear search</a>
+          <?php endif; ?>
+        </form>
+        <?php if ($searchError !== ''): ?>
+          <p class="jobs-search__error" role="alert"><?= h($searchError) ?></p>
+        <?php elseif (!$dbError && $jobs): ?>
+          <p class="jobs-search__status" role="status">
+            <?php if ($searchTerm !== ''): ?>
+              <?= count($jobs) ?> <?= count($jobs) === 1 ? 'job matches' : 'jobs match' ?> "<?= h($searchTerm) ?>".
+            <?php else: ?>
+              Showing <?= count($jobs) ?> <?= count($jobs) === 1 ? 'job' : 'jobs' ?>.
+            <?php endif; ?>
+          </p>
+        <?php endif; ?>
         <?php if ($jobs): ?>
         <ul class="pill-list">
           <?php foreach ($jobs as $role): ?>
             <li><a class="pill" href="#<?= h(job_fragment($role['job_ref'])) ?>"><?= h($role['job_ref']) ?>: <?= h($role['category']) ?></a></li>
           <?php endforeach; ?>
         </ul>
-        <?php else: ?>
-          <p role="status"><?= $dbError ? 'Job listings are temporarily unavailable. Please try again later.' : 'No jobs are currently listed.' ?></p>
+        <?php elseif ($searchError === ''): ?>
+          <p role="status" class="jobs-search__status"><?= $dbError
+              ? 'Job listings are temporarily unavailable. Please try again later.'
+              : ($searchTerm !== ''
+                  ? 'This occupation is not yet available on our site. Please check back for updates or explore other opportunities.'
+                  : 'No jobs are currently listed.') ?></p>
         <?php endif; ?>
       </nav>
 

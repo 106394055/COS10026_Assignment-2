@@ -1,6 +1,31 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.3
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Nov 25, 2026 at 08:00 AM
+-- Server version: 10.11.16-MariaDB
+-- PHP Version: 8.5.12
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `vinfast_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jobs`
+--
 
 CREATE TABLE `jobs` (
   `job_ref` char(5) NOT NULL,
@@ -21,7 +46,9 @@ CREATE TABLE `jobs` (
   `closing_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
+--
+-- Dumping data for table `jobs`
+--
 
 INSERT INTO `jobs` (`job_ref`, `category`, `job_title`, `team`, `reports_to`, `work_mode`, `type_and_hours`, `salary`, `about_role`, `key_responsibilities`, `essential_requirements`, `preferable_criteria`, `performance_goals`, `benefits`, `equal_opportunity`, `closing_date`) VALUES
 ('VF001', 'Software & Web Development', 'E-Commerce UX/UI Front-End Developer', 'Digital Retail UI Team', 'Lead Digital Retail Architect', 'Hybrid (Ho Chi Minh City / Remote)', 'Full-Time, flexible hours (core hours 10:00 AM - 4:00 PM ICT)', '30,000,000 - 45,000,000 VND per month (gross, negotiable based on experience)', 'Design and develop responsive web interfaces for the digital retail platform. Combine visual prototyping with front-end engineering to optimise the vehicle purchasing journey.', 'Create wireframes and interactive prototypes in Figma for vehicle configurations.\r\nBuild responsive web interfaces for vehicle configuration and online ordering.\r\nMaintain web accessibility standards (WCAG) across all customer-facing retail pages.\r\nImplement loading states and performance budgets to optimise page speed.\r\nIntegrate interfaces with order, payment and inventory APIs, minimising third-party dependencies.', 'Bachelor\'s degree in Computer Science, Software Engineering, Design, Human-Computer Interaction, or a related field.\r\nMinimum 3 years of commercial experience in front-end development or UX/UI design.\r\nExpert-level proficiency in Figma.\r\nStrong proficiency in semantic HTML5, CSS3, and core JavaScript.\r\nPractical knowledge of web accessibility standards and ARIA practices.', 'Professional working proficiency in English (IELTS 6.0 equivalent or higher).\r\nExperience with modern front-end frameworks (such as React or Vue.js).\r\nFamiliarity with secure data handling practices for online checkout systems.\r\nPrevious experience in e-commerce or automotive digital retail platforms.', '60-day goal: Deliver reusable checkout and configurator components with zero critical errors in an accessibility audit.\r\n90-day goal: Raise vehicle-configurator completion rate by 15%.', 'Comprehensive health insurance, flexible working hours, and employee discounts on eligible company products.', 'VinFast Digital Retail is an equal opportunity employer, considering candidates regardless of gender, age, ethnicity, religion, or disability.', '2026-10-09'),
