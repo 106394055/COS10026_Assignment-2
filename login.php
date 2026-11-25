@@ -1,4 +1,161 @@
 <?php
+// Server-side authentication handler (added by Nguyen Nhat Thanh - 106394055)
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    session_start();
+}
+
+// Redirect already-authenticated HR managers directly to manage.php
+if (!empty($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header('Location: manage.php');
+    exit();
+}
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+function login_h(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+require_once __DIR__ . '/db_connect.php';
+
+// Ensure `users` table exists and seed marker account ("admin" / "admin") if empty
+if (isset($conn) && $conn instanceof mysqli) {
+    $createUsersSql = "CREATE TABLE IF NOT EXISTS users (
+        user_id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        full_name VARCHAR(100) NOT NULL,
+        role VARCHAR(50) NOT NULL DEFAULT 'HR Manager',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+    mysqli_query($conn, $createUsersSql);
+
+    $countRes = mysqli_query($conn, "SELECT COUNT(*) AS total FROM users");
+    if ($countRes) {
+        $countRow = mysqli_fetch_assoc($countRes);
+        mysqli_free_result($countRes);
+        if ((int) ($countRow['total'] ?? 0) === 0) {
+            $seedUser = 'admin';
+            $seedHash = password_hash('admin', PASSWORD_DEFAULT);
+            $seedName = 'VinFast HR Administrator';
+            $seedRole = 'HR Manager';
+            $seedStmt = mysqli_prepare(
+                $conn,
+                "INSERT INTO users (username, password_hash, full_name, role) VALUES (?, ?, ?, ?)"
+            );
+            if ($seedStmt) {
+                mysqli_stmt_bind_param($seedStmt, 'ssss', $seedUser, $seedHash, $seedName, $seedRole);
+                mysqli_stmt_execute($seedStmt);
+                mysqli_stmt_close($seedStmt);
+            }
+        }
+    }
+}
+
+$loginError   = '';
+$loginNotice  = '';
+$enteredUser  = '';
+
+if (isset($_GET['logged_out']) && $_GET['logged_out'] === '1') {
+    $loginNotice = 'You have been signed out securely.';
+} elseif (isset($_GET['timeout']) && $_GET['timeout'] === '1') {
+    $loginError = 'Your session expired due to inactivity. Please sign in again.';
+} elseif (isset($_GET['auth_required']) && $_GET['auth_required'] === '1') {
+    $loginError = 'Please sign in with an authorized HR manager account to access manage.php.';
+}
+
+$maxAttempts     = 5;
+$lockoutDuration = 60;
+$now             = time();
+$lockoutUntil    = (int) ($_SESSION['login_lockout_until'] ?? 0);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $submittedToken = isset($_POST['csrf_token']) && is_string($_POST['csrf_token']) ? $_POST['csrf_token'] : '';
+    $enteredUser    = isset($_POST['username']) && is_string($_POST['username']) ? trim($_POST['username']) : '';
+    $enteredPass    = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
+
+    if ($lockoutUntil > $now) {
+        $remaining  = $lockoutUntil - $now;
+        $loginError = "Too many failed sign-in attempts. Please wait {$remaining} seconds before trying again.";
+    } elseif (!hash_equals($_SESSION['csrf_token'], $submittedToken)) {
+        $loginError = 'Invalid security token. Please refresh the page and try again.';
+    } elseif ($enteredUser === '' || $enteredPass === '') {
+        $loginError = 'Please enter both your username and password.';
+    } elseif (strlen($enteredUser) > 50 || strlen($enteredPass) > 255) {
+        $loginError = 'Invalid username or password.';
+    } elseif (!isset($conn) || !($conn instanceof mysqli)) {
+        $loginError = 'Authentication service is temporarily unavailable. Please try again later.';
+    } else {
+        $stmt = mysqli_prepare(
+            $conn,
+            "SELECT user_id, username, password_hash, full_name, role FROM users WHERE username = ? LIMIT 1"
+        );
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, 's', $enteredUser);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $user   = $result ? mysqli_fetch_assoc($result) : null;
+            if ($result) {
+                mysqli_free_result($result);
+            }
+            mysqli_stmt_close($stmt);
+
+            if ($user && password_verify($enteredPass, $user['password_hash'])) {
+                if (password_needs_rehash($user['password_hash'], PASSWORD_DEFAULT)) {
+                    $newHash    = password_hash($enteredPass, PASSWORD_DEFAULT);
+                    $rehashStmt = mysqli_prepare($conn, "UPDATE users SET password_hash = ? WHERE user_id = ?");
+                    if ($rehashStmt) {
+                        $uid = (int) $user['user_id'];
+                        mysqli_stmt_bind_param($rehashStmt, 'si', $newHash, $uid);
+                        mysqli_stmt_execute($rehashStmt);
+                        mysqli_stmt_close($rehashStmt);
+                    }
+                }
+
+                session_regenerate_id(true);
+                unset($_SESSION['login_attempts'], $_SESSION['login_lockout_until']);
+
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['admin_user_id']   = (int) $user['user_id'];
+                $_SESSION['admin_username']  = $user['username'];
+                $_SESSION['admin_full_name'] = $user['full_name'];
+                $_SESSION['admin_role']      = $user['role'];
+                $_SESSION['last_activity']   = time();
+                $_SESSION['csrf_token']      = bin2hex(random_bytes(32));
+
+                mysqli_close($conn);
+                header('Location: manage.php');
+                exit();
+            } else {
+                $attempts = (int) ($_SESSION['login_attempts'] ?? 0) + 1;
+                $_SESSION['login_attempts'] = $attempts;
+                if ($attempts >= $maxAttempts) {
+                    $_SESSION['login_lockout_until'] = time() + $lockoutDuration;
+                    $_SESSION['login_attempts']      = 0;
+                    $loginError = "Too many failed sign-in attempts. Please wait {$lockoutDuration} seconds before trying again.";
+                } else {
+                    $loginError = 'Invalid username or password.';
+                }
+            }
+        } else {
+            $loginError = 'Unable to process sign-in request. Please try again later.';
+        }
+    }
+}
+
+if (isset($conn) && $conn instanceof mysqli) {
+    mysqli_close($conn);
+}
+
 $pageTitle = 'Sign In | VinFast Digital Retail Careers';
 $pageDescription = 'Administrator sign-in for VinFast Digital Retail Careers.';
 $pageAuthor = 'Duong Nguyen Khoi';
@@ -180,10 +337,33 @@ $extraHead = <<<'LOGIN_STYLES'
     font-size: 1rem;
     font-weight: 750;
     text-align: center;
+    cursor: pointer;
+    transition: background-color .18s ease;
+}
+.page-login .login-submit:hover:not(:disabled) {
+    background: var(--color-primary-dark, #0847c4);
 }
 .page-login .login-submit:disabled {
     opacity: .82;
     cursor: not-allowed;
+}
+.page-login .login-alert {
+    margin: 0 0 20px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: .9rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+.page-login .login-alert--error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+.page-login .login-alert--notice {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
 }
 .page-login .login-bottom {
     margin: 23px 0 0;
@@ -217,7 +397,8 @@ $extraHead = <<<'LOGIN_STYLES'
     .page-login .login-form-panel h2 { font-size: 1.78rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .page-login .login-field input { transition: none; }
+    .page-login .login-field input,
+    .page-login .login-submit { transition: none; }
 }
 </style>
 LOGIN_STYLES;
@@ -251,19 +432,27 @@ require __DIR__ . '/nav.inc';
                 <h2 id="login-title">Welcome back</h2>
                 <p class="login-subtitle">Sign in to manage recruitment applications and review candidate information.</p>
 
-                <!-- The interface is prepared for future server-side login. No credentials are transmitted yet. -->
-                <div class="login-fields" role="group" aria-label="Administrator sign in">
-                    <div class="login-field">
-                        <label for="login-username">Username</label>
-                        <input id="login-username" type="text" autocomplete="username" placeholder="Enter your username">
-                    </div>
-                    <div class="login-field">
-                        <label for="login-password">Password</label>
-                        <input id="login-password" type="password" autocomplete="current-password" placeholder="Enter your password">
-                    </div>
-                </div>
+                <?php if ($loginError !== ''): ?>
+                    <p class="login-alert login-alert--error" role="alert"><?= login_h($loginError) ?></p>
+                <?php elseif ($loginNotice !== ''): ?>
+                    <p class="login-alert login-alert--notice" role="status"><?= login_h($loginNotice) ?></p>
+                <?php endif; ?>
 
-                <button class="login-submit" type="button" disabled title="Sign-in is not yet available">Sign in</button>
+                <form method="post" action="login.php" novalidate>
+                    <input type="hidden" name="csrf_token" value="<?= login_h($_SESSION['csrf_token']) ?>">
+                    <div class="login-fields" role="group" aria-label="Administrator sign in">
+                        <div class="login-field">
+                            <label for="login-username">Username</label>
+                            <input id="login-username" name="username" type="text" maxlength="50" autocomplete="username" placeholder="Enter your username" value="<?= login_h($enteredUser) ?>" required>
+                        </div>
+                        <div class="login-field">
+                            <label for="login-password">Password</label>
+                            <input id="login-password" name="password" type="password" maxlength="255" autocomplete="current-password" placeholder="Enter your password" required>
+                        </div>
+                    </div>
+
+                    <button class="login-submit" type="submit">Sign in</button>
+                </form>
                 <p class="login-bottom">Looking for opportunities? <a href="jobs.php">Explore open jobs</a></p>
             </section>
         </div>
