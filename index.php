@@ -83,7 +83,7 @@
                   <span class="badge">VF001</span>
                   <span class="job-title">E-Commerce UX/UI Front-End Developer</span>
                 </div>
-                <a href="job.php" class="btn-apply">EXPLORE NOW</a>
+                <a href="jobs.php" class="btn-apply">EXPLORE NOW</a>
               </div>
             </td>
           </tr>
@@ -124,7 +124,7 @@
                   <span class="badge">VF002</span>
                   <span class="job-title">Digital Merchandising &amp; Catalogue Specialist</span>
                 </div>
-                <a href="job.php" class="btn-apply">EXPLORE NOW</a>
+                <a href="jobs.php" class="btn-apply">EXPLORE NOW</a>
               </div>
             </td>
           </tr>
@@ -165,7 +165,7 @@
                   <span class="badge">VF003</span>
                   <span class="job-title">E-Commerce Data Analyst</span>
                 </div>
-                <a href="job.php" class="btn-apply">EXPLORE NOW</a>
+                <a href="jobs.php" class="btn-apply">EXPLORE NOW</a>
               </div>
             </td>
           </tr>
@@ -206,7 +206,7 @@
                   <span class="badge">VF004</span>
                   <span class="job-title">Customer Experience CRM Manager</span>
                 </div>
-                <a href="job.php" class="btn-apply">EXPLORE NOW</a>
+                <a href="jobs.php" class="btn-apply">EXPLORE NOW</a>
               </div>
             </td>
           </tr>
@@ -266,7 +266,7 @@
           <p class="site-bot__title">VinFast Career Assistant</p>
           <p class="site-bot__text">Need help applying? Quote a 5-character reference (VF001–VF004) on the Apply page before <time datetime="2026-10-09">09 October 2026</time>.</p>
           <ul class="site-bot__links">
-            <li><a href="job.php">Browse open roles</a></li>
+            <li><a href="jobs.php">Browse open roles</a></li>
             <li><a href="apply.php">Go to application form</a></li>
             <li><a href="mailto:info@vinfast-digital-retail.example">Email recruitment team</a></li>
           </ul>
