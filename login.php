@@ -1,159 +1,143 @@
 <?php
-// Server-side authentication handler (added by Nguyen Nhat Thanh - 106394055)
-if (session_status() === PHP_SESSION_NONE) {
-    session_set_cookie_params([
-        'lifetime' => 0,
-        'path'     => '/',
-        'httponly' => true,
-        'samesite' => 'Lax',
-    ]);
-    session_start();
-}
-
-// Redirect already-authenticated HR managers directly to manage.php
-if (!empty($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    header('Location: manage.php');
-    exit();
-}
-
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+/**
+ * VinFast Digital Retail — multi-role login handler (SCRUM-87).
+ * Integrated with auth.php and the existing styled login.php template.
+ * Public registration is NOT enabled by this change.
+ */
+require_once __DIR__ . '/auth.php';
 
 function login_h(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-require_once __DIR__ . '/db_connect.php';
+function vf_login_destination(string $role): string
+{
+    return match ($role) {
+        'super_admin', 'application_admin' => 'manage.php',
+        'about_admin' => 'about.php',
+        'jobs_admin', 'candidate' => 'jobs.php',
+        default => 'jobs.php',
+    };
+}
 
-// Ensure `users` table exists and seed marker account ("admin" / "admin") if empty
-if (isset($conn) && $conn instanceof mysqli) {
-    $createUsersSql = "CREATE TABLE IF NOT EXISTS users (
-        user_id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(50) NOT NULL UNIQUE,
-        password_hash VARCHAR(255) NOT NULL,
-        full_name VARCHAR(100) NOT NULL,
-        role VARCHAR(50) NOT NULL DEFAULT 'HR Manager',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
-    mysqli_query($conn, $createUsersSql);
-
-    $countRes = mysqli_query($conn, "SELECT COUNT(*) AS total FROM users");
-    if ($countRes) {
-        $countRow = mysqli_fetch_assoc($countRes);
-        mysqli_free_result($countRes);
-        if ((int) ($countRow['total'] ?? 0) === 0) {
-            $seedUser = 'admin';
-            $seedHash = password_hash('admin', PASSWORD_DEFAULT);
-            $seedName = 'VinFast HR Administrator';
-            $seedRole = 'HR Manager';
-            $seedStmt = mysqli_prepare(
-                $conn,
-                "INSERT INTO users (username, password_hash, full_name, role) VALUES (?, ?, ?, ?)"
-            );
-            if ($seedStmt) {
-                mysqli_stmt_bind_param($seedStmt, 'ssss', $seedUser, $seedHash, $seedName, $seedRole);
-                mysqli_stmt_execute($seedStmt);
-                mysqli_stmt_close($seedStmt);
-            }
-        }
+// Refresh the logged-in user's role and status from MySQL before redirecting.
+$existingUser = vf_current_user();
+if ($existingUser !== null) {
+    if (!vf_can((string) $existingUser['role'], 'manage_eoi')) {
+        // Remove any legacy broad admin flag inherited from the team's old login.
+        unset($_SESSION['admin_logged_in'], $_SESSION['admin_user_id'],
+              $_SESSION['admin_username'], $_SESSION['admin_full_name'], $_SESSION['admin_role']);
     }
+    header('Location: ' . vf_login_destination((string) $existingUser['role']));
+    exit;
 }
 
-$loginError   = '';
-$loginNotice  = '';
-$enteredUser  = '';
+// Never let stale legacy session flags persist on the sign-in screen.
+unset($_SESSION['admin_logged_in'], $_SESSION['admin_user_id'],
+      $_SESSION['admin_username'], $_SESSION['admin_full_name'], $_SESSION['admin_role']);
 
-if (isset($_GET['logged_out']) && $_GET['logged_out'] === '1') {
+$loginError = '';
+$loginNotice = '';
+$enteredUser = '';
+
+if (($_GET['logged_out'] ?? '') === '1') {
     $loginNotice = 'You have been signed out securely.';
-} elseif (isset($_GET['timeout']) && $_GET['timeout'] === '1') {
+} elseif (($_GET['timeout'] ?? '') === '1') {
     $loginError = 'Your session expired due to inactivity. Please sign in again.';
-} elseif (isset($_GET['auth_required']) && $_GET['auth_required'] === '1') {
-    $loginError = 'Please sign in with an authorized HR manager account to access manage.php.';
+} elseif (($_GET['auth_required'] ?? '') === '1') {
+    $loginError = 'Please sign in to access that page.';
 }
 
-$maxAttempts     = 5;
+$maxAttempts = 5;
 $lockoutDuration = 60;
-$now             = time();
-$lockoutUntil    = (int) ($_SESSION['login_lockout_until'] ?? 0);
+$lockoutUntil = (int) ($_SESSION['login_lockout_until'] ?? 0);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $submittedToken = isset($_POST['csrf_token']) && is_string($_POST['csrf_token']) ? $_POST['csrf_token'] : '';
-    $enteredUser    = isset($_POST['username']) && is_string($_POST['username']) ? trim($_POST['username']) : '';
-    $enteredPass    = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
+// auth.php starts a secure session and provides the CSRF token shared with the form.
+vf_csrf_token();
 
-    if ($lockoutUntil > $now) {
-        $remaining  = $lockoutUntil - $now;
-        $loginError = "Too many failed sign-in attempts. Please wait {$remaining} seconds before trying again.";
-    } elseif (!hash_equals($_SESSION['csrf_token'], $submittedToken)) {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+    $token = is_string($_POST['csrf_token'] ?? null) ? $_POST['csrf_token'] : null;
+    $enteredUser = is_string($_POST['username'] ?? null) ? trim($_POST['username']) : '';
+    $enteredPass = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
+
+    if ($lockoutUntil > time()) {
+        $loginError = 'Too many failed sign-in attempts. Please try again later.';
+    } elseif (!vf_verify_csrf($token)) {
         $loginError = 'Invalid security token. Please refresh the page and try again.';
-    } elseif ($enteredUser === '' || $enteredPass === '') {
-        $loginError = 'Please enter both your username and password.';
-    } elseif (strlen($enteredUser) > 50 || strlen($enteredPass) > 255) {
+    } elseif ($enteredUser === '' || $enteredPass === '' || strlen($enteredUser) > 50 || strlen($enteredPass) > 255) {
         $loginError = 'Invalid username or password.';
-    } elseif (!isset($conn) || !($conn instanceof mysqli)) {
-        $loginError = 'Authentication service is temporarily unavailable. Please try again later.';
     } else {
-        $stmt = mysqli_prepare(
-            $conn,
-            "SELECT user_id, username, password_hash, full_name, role FROM users WHERE username = ? LIMIT 1"
-        );
-        if ($stmt) {
+        require_once __DIR__ . '/db_connect.php';
+        // Role and account status are determined by the database, never by POST data.
+        $stmt = mysqli_prepare($conn,
+            'SELECT user_id, username, full_name, password_hash, role, account_status,
+                    candidate_id
+             FROM users WHERE username = ? LIMIT 1');
+        if (!$stmt) {
+            error_log('Login: failed preparing user lookup.');
+            $loginError = 'Authentication service is temporarily unavailable.';
+        } else {
             mysqli_stmt_bind_param($stmt, 's', $enteredUser);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
-            $user   = $result ? mysqli_fetch_assoc($result) : null;
+            $ok = mysqli_stmt_execute($stmt);
+            $result = $ok ? mysqli_stmt_get_result($stmt) : false;
+            $user = $result ? mysqli_fetch_assoc($result) : null;
             if ($result) {
                 mysqli_free_result($result);
             }
             mysqli_stmt_close($stmt);
 
-            if ($user && password_verify($enteredPass, $user['password_hash'])) {
-                if (password_needs_rehash($user['password_hash'], PASSWORD_DEFAULT)) {
-                    $newHash    = password_hash($enteredPass, PASSWORD_DEFAULT);
-                    $rehashStmt = mysqli_prepare($conn, "UPDATE users SET password_hash = ? WHERE user_id = ?");
-                    if ($rehashStmt) {
-                        $uid = (int) $user['user_id'];
-                        mysqli_stmt_bind_param($rehashStmt, 'si', $newHash, $uid);
-                        mysqli_stmt_execute($rehashStmt);
-                        mysqli_stmt_close($rehashStmt);
-                    }
-                }
-
-                session_regenerate_id(true);
-                unset($_SESSION['login_attempts'], $_SESSION['login_lockout_until']);
-
-                $_SESSION['admin_logged_in'] = true;
-                $_SESSION['admin_user_id']   = (int) $user['user_id'];
-                $_SESSION['admin_username']  = $user['username'];
-                $_SESSION['admin_full_name'] = $user['full_name'];
-                $_SESSION['admin_role']      = $user['role'];
-                $_SESSION['last_activity']   = time();
-                $_SESSION['csrf_token']      = bin2hex(random_bytes(32));
-
-                mysqli_close($conn);
-                header('Location: manage.php');
-                exit();
-            } else {
+            if (!$ok) {
+                error_log('Login: failed executing user lookup.');
+                $loginError = 'Authentication service is temporarily unavailable.';
+            } elseif (!$user || !password_verify($enteredPass, (string) $user['password_hash'])
+                || $user['account_status'] !== 'active') {
+                // Identical message for unknown, disabled, and wrong-password accounts.
+                $loginError = 'Invalid username or password.';
                 $attempts = (int) ($_SESSION['login_attempts'] ?? 0) + 1;
                 $_SESSION['login_attempts'] = $attempts;
                 if ($attempts >= $maxAttempts) {
                     $_SESSION['login_lockout_until'] = time() + $lockoutDuration;
-                    $_SESSION['login_attempts']      = 0;
-                    $loginError = "Too many failed sign-in attempts. Please wait {$lockoutDuration} seconds before trying again.";
+                    $_SESSION['login_attempts'] = 0;
+                    $loginError = 'Too many failed sign-in attempts. Please try again later.';
+                }
+            } else {
+                if (!vf_can((string) $user['role'], 'edit_own_profile')) {
+                    // Unknown role: fail closed instead of granting permissions.
+                    $loginError = 'Your account cannot sign in at the moment.';
                 } else {
-                    $loginError = 'Invalid username or password.';
+                    if (password_needs_rehash((string) $user['password_hash'], PASSWORD_DEFAULT)) {
+                        $newHash = password_hash($enteredPass, PASSWORD_DEFAULT);
+                        $rehashStmt = mysqli_prepare($conn,
+                            'UPDATE users SET password_hash = ? WHERE user_id = ?');
+                        if ($rehashStmt) {
+                            $id = (int) $user['user_id'];
+                            mysqli_stmt_bind_param($rehashStmt, 'si', $newHash, $id);
+                            mysqli_stmt_execute($rehashStmt);
+                            mysqli_stmt_close($rehashStmt);
+                        }
+                    }
+
+                    vf_sign_in($user);
+
+                    // TEMPORARY compatibility with Thanh's current manage.php.
+                    // Only roles allowed to manage EOIs get the legacy admin flag.
+                    // manage.php must be updated to vf_require_permission('manage_eoi')
+                    // before public registration is enabled.
+                    if (vf_can((string) $user['role'], 'manage_eoi')) {
+                        $_SESSION['admin_logged_in'] = true;
+                        $_SESSION['admin_user_id'] = (int) $user['user_id'];
+                        $_SESSION['admin_username'] = (string) $user['username'];
+                        $_SESSION['admin_full_name'] = (string) $user['full_name'];
+                        $_SESSION['admin_role'] = (string) $user['role'];
+                    }
+
+                    header('Location: ' . vf_login_destination((string) $user['role']));
+                    exit;
                 }
             }
-        } else {
-            $loginError = 'Unable to process sign-in request. Please try again later.';
         }
     }
-}
-
-if (isset($conn) && $conn instanceof mysqli) {
-    mysqli_close($conn);
 }
 
 $pageTitle = 'Sign In | VinFast Digital Retail Careers';
@@ -414,7 +398,7 @@ require __DIR__ . '/nav.inc';
                 <div>
                     <span class="login-eyebrow">VinFast Digital Retail</span>
                     <h1 id="login-hero-title">Your career.<span>Your next move.</span></h1>
-                    <p>Welcome to the careers portal. A dedicated sign-in space for the recruitment management team.</p>
+                    <p>Welcome to the careers portal. Sign in to access your account.</p>
                 </div>
                 <div class="login-intro__footer">
                     <span class="login-lock" aria-hidden="true">
@@ -423,14 +407,14 @@ require __DIR__ . '/nav.inc';
                             <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
                         </svg>
                     </span>
-                    <span>Restricted access · Authorized recruitment staff only</span>
+                    <span>Secure access · Staff and applicants</span>
                 </div>
             </section>
 
             <section class="login-form-panel" aria-labelledby="login-title">
-                <p class="login-topline">Manager access</p>
+                <p class="login-topline">Account access</p>
                 <h2 id="login-title">Welcome back</h2>
-                <p class="login-subtitle">Sign in to manage recruitment applications and review candidate information.</p>
+                <p class="login-subtitle">Sign in to access your VinFast Careers account.</p>
 
                 <?php if ($loginError !== ''): ?>
                     <p class="login-alert login-alert--error" role="alert"><?= login_h($loginError) ?></p>
@@ -440,7 +424,7 @@ require __DIR__ . '/nav.inc';
 
                 <form method="post" action="login.php" novalidate>
                     <input type="hidden" name="csrf_token" value="<?= login_h($_SESSION['csrf_token']) ?>">
-                    <div class="login-fields" role="group" aria-label="Administrator sign in">
+                    <div class="login-fields" role="group" aria-label="Account sign in">
                         <div class="login-field">
                             <label for="login-username">Username</label>
                             <input id="login-username" name="username" type="text" maxlength="50" autocomplete="username" placeholder="Enter your username" value="<?= login_h($enteredUser) ?>" required>
