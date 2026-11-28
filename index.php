@@ -254,10 +254,7 @@
         </a>
       </div>
     </section>
-<<<<<<< HEAD
-    
-=======
-
+  
     <!-- Bot  -->
     <div class="site-bot">
       <details class="site-bot__Widget">
@@ -276,7 +273,6 @@
         </div>
       </details>
     </div>
->>>>>>> d9a5ac6397dca603dfdac509e00e31daa71f69e4
   </main>
 
 <?php
